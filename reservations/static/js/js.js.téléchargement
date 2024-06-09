@@ -1,0 +1,15 @@
+
+function cutText(texte, nb = 0, longueur = 100) {
+    return texte.substr(nb, longueur) + '...';
+}
+
+function addSuffixe(fichier, suffixe = '-small') {
+    len = fichier.length;
+    ppt = fichier.lastIndexOf(".");
+    ext = fichier.substr(ppt, len - ppt);
+    return fichier.replace(ext, suffixe + ext);
+}
+
+function asset(image) {
+    return location.protocol + '//' + location.host +  '/storage/' + image;
+}

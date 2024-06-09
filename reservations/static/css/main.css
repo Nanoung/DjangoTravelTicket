@@ -1,0 +1,122 @@
+  /* ––––––––––––––––––––––––––––––––––––––––––––––––––
+    Based on: https://codepen.io/nickelse/pen/YGPJQG
+    Influenced by: https://sproutsocial.com/
+  –––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
+  /* #Mega Menu Styles
+  –––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+html, body {
+  font-family: "Merriweather", "Times New Roman", Times, serif;
+}
+
+.custom-btn {
+  color: #FFF;
+  background-color: #2cb14b;
+}
+
+.bg-gray-h {
+    /* background: transparent; */
+    color: #2cb14b;
+}
+
+.bg-gray-h:hover {
+    color: #2cb14b;
+    background-color: #C3C3C3;
+}
+
+.bg-green-o, .bg-green-o-h:hover {
+    background-color: var(--o-vert);
+}
+
+.custom-text-green {
+    color:var(--o-vert);
+}
+
+.bg-green-h {
+    background-color: #FFF;
+    color: var(--o-vert);
+}
+
+.text-green-o, .text-green-o-h:hover {
+    color: var(--o-vert);
+}
+
+.border-green-o {
+    border-color: var(--o-vert);
+}
+
+.bg-green-h:hover{
+  color:#fff;
+  background-color:var(--o-vert);
+}
+
+#structures-home .item, .structures-home .item {
+    position: relative;
+    min-height: 250px;
+    max-height: 250px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 10px 8px 20px 0 rgba(0,0,0,0.2);
+    transition: all .2s ease-in-out;
+    margin: .1rem .4rem;
+    margin-bottom: 1rem;
+    color: green;
+}
+
+#structures-home .item:hover, .structures-home .item:hover {
+    filter: grayscale(15%);
+    background-color: rgb(243, 241, 241);
+    box-shadow: 0 3px 14px 0 rgba(0,0,0,0.2);
+}
+
+#structures-home .item .h-title, .structures-home .item .h-title{
+    /* color: var(--o-vert); */
+    font-weight: bolder;
+    margin: 15px auto;
+    margin-bottom: 0;
+    font-size: 1.1em;
+}
+
+#structures-home .item .icon, .structures-home .item .icon{
+    /* color: var(--o-vert); */
+    margin: 15px auto;
+    margin-bottom: 0;
+}
+
+.divider {
+    height: 3px;
+    padding: 0;
+    margin: 0 auto;
+    margin-right: auto;
+    margin-left: auto;
+    background: green;
+    border: none;
+}
+
+.wrapper-grade-type {
+    height: 25px;
+    /* border-radius: ; */
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+span.disabled {
+    background-color: rgb(228, 227, 227);
+    pointer-events: none;
+}
+
+.album-h-b {
+    opacity: 0;
+    position: absolute;
+    width: 218px;
+    height: 165px;
+}
+
+.album-h-b:hover {
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 1;
+}

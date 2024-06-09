@@ -1,0 +1,11 @@
+$(".owl-carousel.slider").owlCarousel({
+    items: 1,
+    loop: true,
+    margin: 0,
+    autoplay: true,
+    autoWidth: false,
+    autoHeight: false,
+    autoHeightClass: 'owl-height',
+    autoplayTimeout: 8000,
+    autoplayHoverPause: true,
+});

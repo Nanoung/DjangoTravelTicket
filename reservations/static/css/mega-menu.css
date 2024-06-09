@@ -1,0 +1,155 @@
+  /* ––––––––––––––––––––––––––––––––––––––––––––––––––
+  /* #Mega Menu Styles
+  –––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+.mega-menu {
+    display: none;
+    left: 0;
+    position: absolute;
+    text-align: left;
+    width: 100%;
+    z-index: 99999999999999999999;
+}
+
+nav.sticky {
+    width: 100%;
+    z-index: 99999999999999999999;
+    position: fixed;
+}
+
+/* nav level-bar left right, big-menu-ul */
+nav.sticky #before-menu 
+/* nav.sticky #level-bar,
+nav.sticky #level-bar > div */ {
+    height: 0;
+    opacity: 0;
+    transition: .5s 0s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+nav #phantom-logo {
+    display: inline-block;
+    opacity: 0;
+}
+
+nav.sticky #phantom-logo {
+    opacity: 1;
+    margin-right: 100px;
+    transition: .5s 0s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+li.custom-bg-green,
+a.custom-bg-green {
+    background: transparent;
+}
+
+li.custom-bg-green:hover,
+a.custom-bg-green:hover {
+    background: #2cb14b;
+}
+
+.custom-bg-green {
+background: #2cb14b;
+}
+
+
+
+  /* #hoverable Class Styles
+  –––––––––––––––––––––––––––––––––––––––––––––––––– */
+.hoverable {
+    position: static;
+}
+
+.hoverable>a:after {
+    content: "\25BC";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+}
+.hoverable:hover .mega-menu {
+display: block;}
+
+
+  /* #toggle Class Styles
+  –––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+.toggleable>label:after {
+    content: "\25BC";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-input:not(checked)~.mega-menu {
+    display: none;
+}
+
+.toggle-input:checked~.mega-menu {
+    display: block;
+}
+
+.toggle-input:checked+label {
+    color: white;
+    background: #2c5282;
+    /*@apply bg-blue-800 */
+}
+
+.toggle-input:checked~label:after {
+    content: "\25B2";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+}
+
+#level-bar {
+    background: transparent;
+    height: 30px; 
+}
+
+#left {
+    width: 18.5%; 
+    margin-right: 0.2%; 
+    height: 30px; 
+    display: inline-block; 
+    background: #343a40;
+}
+
+#right {
+    width: 80.45%;
+    height: 30px; 
+    display: inline-block; 
+    background: #28a745;
+}
+
+/* #default-carousel {
+    z-index: -1;
+} */
+
+.slogan {
+    color: #28a745;
+    line-height: 1.5;
+    font-size: 26px;
+    font-weight: bolder !important;
+}
+
+.child-title {
+    color: #28a745;
+    background-color: #FFF;
+}
+
+.subchild-li a::before {
+    content: '→';
+    font-size: 1.5rem;
+    opacity: 0;
+}
+
+.subchild-li:hover a::before {
+    opacity: 1;
+    transition: cubic-bezier(0.95, 0.05, 0.795, 0.035) .5s .5s;
+}

@@ -1,0 +1,249 @@
+@font-face {
+    font-family: 'Reey Regular';
+    src: url('reey/Reey-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.signature{
+  font-family: 'Reey Regular';
+}
+
+.grille-bouton {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 0.0em;
+    margin-left: 0;
+}
+
+.grille-bouton {
+    position: relative;
+    bottom: 0;
+}
+
+.grille-pagination {
+    display: grid;
+    width: 100%;
+    margin: 15px auto;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 1.5em;
+    justify-content: center;
+}
+
+.grille {
+    max-width: 1400px;
+    width: 100%;
+    height: auto;
+    margin: 15px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 300px);
+    justify-content: center;
+    grid-gap: 1.5em;
+}
+
+.grille-deux {
+    display: grid;
+    width: 100%;
+    margin: 15px auto;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1.5em;
+    justify-content: center;
+}
+
+.p-item {
+    box-shadow: 5px 5px 5px #1c2605;
+    padding: 0 1.0em;
+}
+
+.cadre-img,
+.i-h-350 {
+    max-width: 280px;
+}
+
+.cadre-name {
+    font-weight: bold;
+    color: blue;
+    font-size: 1.1em;
+}
+
+.grille-info,
+.cadre-title,
+.cadre-fonction {
+    font-weight: bold;
+    color: rgb(33, 33, 153);
+    font-size: 1.1em;
+}
+
+.cadre-content {
+    color: rgb(28, 28, 71);
+    font-size: 1.0em;
+}
+
+.btn-100 {
+    width: 100%;
+}
+
+.btn-50 {
+    width: 50%;
+}
+
+.grade h3 {
+    font-size: 1.6em;
+    display: inline;
+}
+
+.grade span {
+    font-size: 1.4em;
+}
+
+.intitule h3 {
+    font-size: 1.3em;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.depart {
+    display: inline;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.struct {
+    font-size: 1.1em;
+    display: inline;
+}
+
+.list {
+    display: inline;
+}
+
+.owl-carousel div span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    /* border: 1px solid red; */
+    font-size: 30px;
+    color: #fff;
+    transition: 0.35s all ease;
+    z-index: 2;
+}
+
+div.form-group textarea.form-control,
+div.form-group input.form-control,
+div.form-group select.form-control,
+div.form-group span.select2,
+div.form-group select.form-control {
+    border: 1px var(--una-bleu) solid;
+}
+label,
+div.form-control label.control-label{
+    font-weight: bold;
+    color: navy;
+}
+
+
+.structure-formation {
+    padding: 1.0em;
+}
+.formation,
+.discipline-formation{
+    padding: 0.10em;
+    border-bottom: 1px black solid;
+}
+.grade-active,
+div.structure div.active{
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+}
+h2.title{
+    margin-top: 0.1rem;
+    --text-opacity: 1;
+    color: #1a202c;
+    color: rgba(26,32,44,var(--text-opacity));
+    font-weight: 900;
+    border-bottom:2px black solid;
+}
+div.discipline div.active{
+    background-color: var(--una-gris);
+    color: white;
+    font-weight: bold;
+}
+
+
+div.formation div.active{
+    background-color: var(--una-gris);
+    color: white;
+    font-weight: bold;
+}
+.actualite_img{
+    width:200px;
+    height:150px;
+    background-repeat: no-repeat;
+}
+h4.title {
+  margin-top: 0.1rem;
+  --text-opacity: 1;
+  color: #1a202c;
+  font-weight: 700;
+}
+
+h3.title {
+  margin-top: 0.1rem;
+  --text-opacity: 1;
+  color: #1a202c;
+  font-weight: 900;
+}
+
+.bg-main{
+    --tw-bg-opacity:1;
+    background-color:var(--bg-main);
+}
+
+.bg-title{
+    --tw-bg-opacity:1;
+    background-color:var(--bg-title);
+}
+
+.mot-du-president{
+    max-width: 960px;
+    margin: 0;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px #1c2605;
+}
+.mot-du-president img{
+    width: 400px;
+    height: 400px;
+    float: left;
+    object-fit: cover;
+}
+.mot-du-president p{
+    text-align: justify;
+    line-height: 1.4;
+    padding: 25px;
+}
+
+.section-model div {
+    border: 1px solid #F5F5F5;
+    border-radius: 5px;
+    margin: 0 5px;
+    padding: 5px;
+}
+
+.section-model div:hover {
+    /* background: #f1f1f1; */
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+p{
+    text-align: justify !important;
+}
+img .appel-a-candidature,
+div.appel-a-candidature img,
+div.appel-a-candidature img.appel-a-candidature{
+    max-height: 300px;
+    width: auto;
+}
