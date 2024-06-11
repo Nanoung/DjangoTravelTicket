@@ -8,6 +8,8 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.db.models.signals import m2m_changed
 from django.db.models.signals import post_save
+from django.db import transaction
+
 
 
 # Create your models here.
@@ -167,6 +169,9 @@ class TrajetSegment(models.Model):
     trajet_id = models.ForeignKey(Trajet, on_delete=models.CASCADE)
     segment_id = models.ForeignKey(Segment, on_delete=models.CASCADE)
     prix_segment = models.DecimalField(max_digits=10, decimal_places=2 ,default=0.0)
+
+print("Bien ok")
+
 """
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_horaire(sender, instance, action, **kwargs):
@@ -203,15 +208,47 @@ def update_horaire(sender, instance, action, **kwargs):
                         heure_arrivee = new_datetime.time()                    
                         horair.heure_arrivee = heure_arrivee
                         horair.save()
+
+print("Bien kkk")
+
+@receiver(m2m_changed, sender=Trajet.segments.through)
+def update_other_segments(sender, instance, action, reverse, model, pk_set, **kwargs):
+    if action == "post_add" or action == "post_clear":
+        print("Bien joué")
+
+        with transaction.atomic():
+            tajet_segment, created = Segment.objects.get_or_create(
+                depart=instance.adress_depart, 
+                arrivee=instance.adress_arrivee, 
+                prix=instance.prix
+            )
+            try:
+                instance.segments.add(tajet_segment)
+                print("ajout du segment : ")
+
+            except Exception as e:
+                print("Erreur lors de l'ajout du segment : ")
+
+    instance.save()
 """
+
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
     #segmentss = Segment.objects.filter(trajet=1)
     if action == "post_add" or action == "post_clear":
-        print("bien jouer")
-        tajet_segment, created = Segment.objects.get_or_create(
-        depart=instance.adress_depart, arrivee=instance.adress_arrivee ,prix=instance.prix
-)
+        
+        with transaction.atomic():
+            tajet_segment, created = Segment.objects.get_or_create(
+                depart=instance.adress_depart, 
+                arrivee=instance.adress_arrivee, 
+                prix=instance.prix
+            )
+            try:
+                instance.segments.add(tajet_segment)
+                print("ajout du segment : ")
+
+            except Exception as e:
+                print("Erreur lors de l'ajout du segment : ")
 
 
         for segment_id in pk_set:
@@ -224,7 +261,6 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
                     #print("je suis dans if")
 
                     segment.horairesegment.create(heure_depart=dummy_date)
-                    """
             else:
                     #pre_segments = Segment.objects.get(pk=segment_id)
 
@@ -238,7 +274,6 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
 
                                 #horairesegss = segment.horairesegment.all()
                             segment.horairesegment.create(heure_depart=dummy_dat)
-                            """
             segment.save()
                 
 """

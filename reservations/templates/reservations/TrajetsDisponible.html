@@ -27,18 +27,23 @@
     <div class="container">
         <h1>Trajet Disponible </h1>
         
-        {% if trajets %}
+        {% if segments_disponibles %}
   
-        {% for trajet in segments_disponibles %}
-        <div class="card-body">
-            <ul class="list-group">
-                
-                <li class="list-group-item"> {{ trajet.heure_depart|time:"H\hi" }}   - {{ trajet.type }} </li>
-                <li class="list-group-item"> {{ trajet.adress_depart }} - {{ trajet.adress_arrivee }} -   -- Prix:  {{ trajet.prix }} FCFA    --  Continuer </li>
-                
-                
-            </ul>
-        </div>
+            {% for trajet, segment, horairesegments in segments_disponibles %}
+
+                {% for horaire in horairesegments %}
+
+                    <div class="card-body">
+                        <ul class="list-group">
+                    
+                            <li class="list-group-item"> {{ horaire.heure_depart|time:"H\hi" }}  </li>
+                            <li class="list-group-item"> {{ segment.depart }} - {{ segment.arrivee }} -   -- Prix:  4545454 FCFA    --  Continuer </li>
+                    
+                    
+                        </ul>
+                    </div>
+                {% endfor %}
+
         {% endfor %}
 
         {% else %}

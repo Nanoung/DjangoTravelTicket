@@ -10,7 +10,10 @@ from .forms import TrajetHoraireForm
 
 
 def essayons(request):
-    return render(request, 'reservations/home.html')
+        form = TrajetHoraireForm()
+        
+        return render(request, 'reservations/home.html', {'form': form})
+
 
 
 # Create your views here.
@@ -22,23 +25,28 @@ def rechercher_trajet(request):
     segments =None
     horaires = None
 
-    
-    if request.method == 'POST':
-            form = TrajetHoraireForm(request.POST)
+    segments_disponibles = []
 
-            if form.is_valid():
-                adresse_depart = form.cleaned_data['adresse_depart']
-            adresse_arrivee = form.cleaned_data['adresse_arrivee']
+    if request.method == 'POST':
+        form = TrajetHoraireForm(request.POST)
+
+        if form.is_valid():
+            adresse_depart = form.cleaned_data['adress_depart']
+            adresse_arrivee = form.cleaned_data['adress_arrivee']
             date_depart = form.cleaned_data['date_depart']
             # Recherche de l'horaire avec la date de départ spécifiée
-            horaire = Horaire.objects.get(date_depart=date_depart)
-            # Récupération du trajet associé à cet horaire
-            trajets = Trajet.objects.get(horaires=horaire)
-            # Récupération de tous les segments associés à ce trajet
-            segments = trajets.segments.all()
-            # Filtrer les segments en fonction des adresses de départ et d'arrivée spécifiées
-            segments_disponibles = segments.filter(depart=adresse_depart, arrivee=adresse_arrivee)
-            return render(request, 'TrajetsDisponible.html', {'segments_disponibles': segments_disponibles})
+            trajets = Trajet.objects.filter(date_depart=date_depart)
+            for trajet in trajets:
+                #for horaire in trajet.horaires.all():
+                    #if horaire.heure_depart.date() == date_depart:
+                segments_filtres=trajet.segments.filter(depart=adresse_depart, arrivee=adresse_arrivee)
+                for segment in segments_filtres:
+                    horairesegments = segment.horairesegment.all()  # Utilisation correcte sans les parenthèses
+                    segments_disponibles.append((trajet, segment, horairesegments))
+                            #segments_disponibles = trajet.segments.filter(depart=adresse_depart, arrivee=adresse_arrivee)
+                        #trajets_disponibles.append((trajet, horaire, segments_filtrés))
+
+            return render(request, 'reservations/TrajetsDisponible.html', {'segments_disponibles': segments_disponibles})
     else:
         form = TrajetHoraireForm()
-    return render(request, 'votre_formulaire_template.html', {'form': form})
+    return render(request, 'reservations/home.html', {'form': form})
