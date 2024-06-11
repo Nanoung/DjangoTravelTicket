@@ -108,7 +108,7 @@ class Trajet(models.Model):
 # Utiliser l'objet datetime comme valeur par défaut pour le champ date_depart
     #date_depart = models.DateField(default=date_obj)
 
-    
+    prix = models.DecimalField(max_digits=10, decimal_places=2 , null= True)
     date_depart= models.DateField(default=timezone.now)
     adress_depart=models.CharField(choices=Ville.choices, max_length=50)
     adress_arrivee=models.CharField(choices=Ville.choices, max_length=50)
@@ -155,7 +155,7 @@ class Segment(models.Model):
     arrivee = models.CharField(choices=Ville.choices, max_length=50)
     #ordre = models.IntegerField(blank=True)
     prix = models.DecimalField(max_digits=10, decimal_places=2)
-    duree = models.IntegerField(help_text="Durée en minutes")
+    duree = models.IntegerField(help_text="Durée en minutes", default=480)
     horairesegment = models.ManyToManyField('SegmentHoraire',related_name='segments',null=True , blank=True)
 
     def __str__(self):
@@ -209,13 +209,36 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
     #segmentss = Segment.objects.filter(trajet=1)
     if action == "post_add" or action == "post_clear":
         print("bien jouer")
+        tajet_segment, created = Segment.objects.get_or_create(
+        depart=instance.adress_depart, arrivee=instance.adress_arrivee ,prix=instance.prix
+)
+
+
         for segment_id in pk_set:
             segment = Segment.objects.get(pk=segment_id)
-            for horaire in instance.horaires.all():
-                dummy_date = datetime.combine(datetime.today(), horaire.heure_depart)
+            if segment.depart == instance.adress_depart:
 
-                segment.horairesegment.create(heure_depart=dummy_date)
+                for horaire in instance.horaires.all():
 
+                    dummy_date = datetime.combine(datetime.today(), horaire.heure_depart)
+                    #print("je suis dans if")
+
+                    segment.horairesegment.create(heure_depart=dummy_date)
+                    """
+            else:
+                    #pre_segments = Segment.objects.get(pk=segment_id)
+
+                for segment_id in pk_set:
+                    pre_segment = Segment.objects.get(pk=segment_id)
+
+                    for horairesegment in pre_segment.horairesegment.all():
+                        dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
+
+                        if  segment.depart == pre_segment.arrivee  and dummy_dat:
+
+                                #horairesegss = segment.horairesegment.all()
+                            segment.horairesegment.create(heure_depart=dummy_dat)
+                            """
             segment.save()
                 
 """
@@ -280,7 +303,7 @@ def update_heure_arrivee(sender, instance, action, **kwargs):
                     horaire.heure_arrivee = heure_arrivee
                     horaire.save()
 
-        """
+"""
 
 
     def save(self, *args, **kwargs):
@@ -295,7 +318,7 @@ def update_heure_arrivee(sender, instance, action, **kwargs):
         if not self.pk:  # Si c'est un nouveau segment
             self.ordre = self.Trajet.Segments.count() + 1  # Calculez l'ordre
         super().save(*args, **kwargs)
-    """
+"""
 class SegmentHoraire(models.Model):
     heure_depart = models.TimeField()
     heure_arrivee = models.TimeField(null=True , blank=True)
