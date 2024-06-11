@@ -17,17 +17,21 @@ class CarsAdmin(admin.ModelAdmin):
     list_display =('id','immatriculation','nombre_places','type')
 
 class HoraireAdmin(admin.ModelAdmin):
+    time_format = '%H:%M'
     list_display =('id','heure_depart')
 
 class SegmentAdmin(admin.ModelAdmin):
-    list_display =('id','depart','arrivee','ordre','duree','prix')
+    list_display =('id','depart','arrivee','duree','prix')
 
 class CarTypeAdmin(admin.ModelAdmin):
     list_display =('id','nom')
     
 
 class SegmentHoraireAdmin(admin.ModelAdmin):
+    time_format = '%H:%M'
     list_display =('id','heure_depart','heure_arrivee')
+
+    
 
 
 
