@@ -5,7 +5,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from reservations.models import Avantage, Horaire, Segment, Trajet, TrajetSegment
+from reservations.models import Avantage, Horaire, Segment, SegmentHoraire, Trajet, TrajetSegment
 from .forms import TrajetHoraireForm
 
 
@@ -65,14 +65,15 @@ def rechercher_trajet(request):
         form = TrajetHoraireForm()
     return render(request, 'reservations/home.html', {'form': form})
 
-def details_trajet(request, id_trajet , id_segment):
+def details_trajet(request, id_trajet , id_segment , id_horaire):
         #trajet = get_object_or_404(Trajet, id=id_trajet)
         #segment = get_object_or_404(Segment, id_=id)
     try:
         trajet = Trajet.objects.get(id=id_trajet)
         segment = get_object_or_404(Segment, id=id_segment)
-        # trajet_segments = TrajetSegment.objects.filter(segment_id=id_segment , trajet_id = id_trajet)
-        # avantages = Avantage.objects.filter(id=trajet.car.type.avantages.id)
+        trajet_segments = TrajetSegment.objects.get(segment_id=id_segment , trajet_id = id_trajet)
+        avantages = trajet.car.type.avantages
+        horaire=SegmentHoraire.objects.get(id=id_horaire)
 
     
 
@@ -83,10 +84,14 @@ def details_trajet(request, id_trajet , id_segment):
              'id':trajet.id,
              "depart" : segment.depart,
              "id_segment" : segment.id,
-            #   "prix" : trajet_segments.prix_segment,
+             "prix" : trajet_segments.prix_segment,
               "car" : trajet.car.immatriculation,
               "type" : trajet.car.type.nom,
-            #  "avantages": list(avantages.values('id', 'nom', 'description'))
+              "heure_depart":horaire.heure_depart,  
+            "heure_arrivee":horaire.heure_arrivee,
+            "id_horaire" : horaire.id,
+
+             "avantages": list(avantages.values('id', 'nom', 'description'))
         }
         try:
             trajets["car"] = trajet.car.immatriculation
@@ -103,7 +108,7 @@ def details_trajet(request, id_trajet , id_segment):
         
 
 
-def Reservation_trajet(request):
+def Reservation_trajet(request , id_trajet , id_segment , id_horaire):
         form = TrajetHoraireForm()
         
         return render(request, 'reservations/ReservationTicket.html', {'form': form})

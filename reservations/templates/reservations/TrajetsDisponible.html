@@ -32,38 +32,50 @@
             var ids = link.data('id').split('-');
             var trajetId = ids[0];
             var segmentId = ids[1];
+            var horaireId = ids[2];
+
             // var trajetId = link.data('id'); // Extract info from data-* attributes
             var modal = $(this);
             console.log(trajetId)
 
             $.ajax({
                 // url: '/TravelTickets_Detail_trajet/' + trajetId + '/' + segmentId + '/',
-                url: '/TravelTickets_Detail_trajet/' + (trajetId ? trajetId : '0') + '/' + (segmentId ? segmentId : '0') + '/', // URL de la vue Django avec les ID du trajet et du segment
+                url: '/TravelTickets_Detail_trajet/' + (trajetId ? trajetId : '0') + '/' + (segmentId ? segmentId : '0') + '/' + (horaireId ? horaireId : '0') + '/', // URL de la vue Django avec les ID du trajet et du segment
 
                 method: 'GET',
                 success: function(data) {
                     var trajet = data.trajet; // Récupère les détails du trajet depuis la réponse JSON
                     var avantages = trajet.avantages; // Liste des avantages
-                //     var avantagesHtml = '<ul>';
+                    var avantagesHtml = '<ul>';
 
-                // // Utilisation d'une boucle `for` pour itérer sur les avantages
-                //     for (var i = 0; i < avantages.length; i++) {
-                //         avantagesHtml += '<li>' + avantages[i].nom + ': ' + avantages[i].description + '</li>';
-                //         console.log(avantages[i].nom)
-                //     }
-                //     avantagesHtml += '</ul>';
-                    modal.find('#staticBackdropLabel').text('Détails du Segment'); // You can set a dynamic title here
+                // Utilisation d'une boucle `for` pour itérer sur les avantages
+                    for (var i = 0; i < avantages.length; i++) {
+                        avantagesHtml += '<li> <u>' + avantages[i].nom + '</u>: ' + avantages[i].description + '</li>';
+                        console.log(avantages[i].nom)
+                    }
+                    avantagesHtml += '</ul>';
+                    modal.find('#staticBackdropLabel').html(`<p>${trajet.heure_depart}H&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong> ${trajet.depart}---------- --${trajet.arrivee} </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${trajet.heure_arrivee}H</p>  `); // You can set a dynamic title here
                     modal.find('.modal-body').html(`
-                        <p><strong>Départ :</strong> ${trajet.id}</p>
+                        <p><strong>Départ :</strong> ${trajet.depart}</p>
                         <p><strong>Arrivée :</strong> ${trajet.arrivee}</p>
                         <p><strong>Segment ID :</strong> ${trajet.id}</p>
-                        <p><strong>Type de Car :</strong> ${trajet.depart}</p>
-                        <p><strong>Trajet ID :</strong> ${trajet.id_segment}</p>
-                        <p><strong>Avantages :</strong> ${trajet.car}</p>
-                        <p><strong>Avantages :</strong> ${trajet.type}</p>
-                        <p><strong>Avantages :</strong> ${trajet.prix}</p>
+                        <p><strong>Type de Car :</strong> ${trajet.type}</p>
+                        <p><strong>Immatriculation du Car :</strong> ${trajet.car}</p>
+                        <p><strong>Prix :</strong> ${trajet.prix}</p>
+                        <p><strong>Avantages :</strong></p>
+
+                        ${avantagesHtml}
+                        <p><strong>Information :</strong></p> 
+                    
 
 
+
+
+
+                    `);
+                    modal.find('.Continuer').html(`
+                        <a  href="/TravelTickets_Reservation/${trajet.id}/${trajet.id_segment}/${trajet.id_horaire}/"> Continuer </a>
+                    
 
                     `);
                 },
@@ -106,11 +118,11 @@
                         <ul class="list-group">
                     
                             
-                            <a href="{% url 'detail_trajet' trajet.id segment.id %}"  class="btn "  data-id="{{ trajet.id }}-{{ segment.id }}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                            <a href="{% url 'detail_trajet' trajet.id segment.id horaire.id %}"  class="btn "  data-id="{{ trajet.id }}-{{ segment.id }}-{{ horaire.id }}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                                 <li class="list-group-item"> {{ horaire.heure_depart|time:"H\hi" }}  </li>
                                 <li class="list-group-item"> {{ segment.depart }} - {{ segment.arrivee }} -  {{ segment.id }}   -- Prix: {{ trajet_segment.prix_segment }}  FCFA   {{ trajet.car.type }}  --  {{ trajet.id }} </li>
                             </a>
-                            <a  href="" class="btn btn-outline-warning">Continuer</a>
+                            <a  href="{% url 'reservation_trajet' trajet.id segment.id horaire.id %}" class="btn btn-outline-warning">Continuer</a>
 
                     
                     
@@ -125,23 +137,7 @@
         {% endif %}
     </div>
     <!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-        <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Understood</button>
-        </div>
-    </div>
-    </div>
-</div>
+
 
 
 
