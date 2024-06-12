@@ -24,4 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', views.rechercher_trajet , name='rechercher_trajet'),
+    path('TravelTickets_Detail_trajet/<int:id_trajet>/<int:id_segment>/',views.details_trajet, name='detail_trajet'), 
+    path('TravelTickets_Reservation/<int:id_trajet>/<int:id_segment>',views.Reservation_trajet, name='detail_segment'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

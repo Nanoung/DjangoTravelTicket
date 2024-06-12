@@ -1,0 +1,1 @@
+import{p as t,b as n}from"./p-6f1b87c1.js";(()=>{const n=import.meta.url,r={};return""!==n&&(r.resourcesUrl=new URL(".",n).href),t(r)})().then((t=>n([["p-3d7b231e",[[1,"flix-illustration",{name:[1],src:[1],svgContent:[32]}]]]],t)));

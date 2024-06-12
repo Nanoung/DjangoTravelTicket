@@ -1,0 +1,430 @@
+define('@webc/robotnik-router',['exports','react','@flixbus/transclusion-eventing'],function(exports,React,transclusionEventing){'use strict';function _interopDefaultLegacy(e){return e&&typeof e==='object'&&'default'in e?e:{'default':e}}var React__default=/*#__PURE__*/_interopDefaultLegacy(React);/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+function __rest(s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+}
+
+function __decorate(decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __param(paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+}
+
+function __metadata(metadataKey, metadataValue) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+}
+
+function __createBinding(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}
+
+function __exportStar(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+
+function __values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+function __spread() {
+    for (var ar = [], i = 0; i < arguments.length; i++)
+        ar = ar.concat(__read(arguments[i]));
+    return ar;
+}
+
+function __spreadArrays() {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
+function __asyncDelegator(o) {
+    var i, p;
+    return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+    function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+}
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+}
+
+function __makeTemplateObject(cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
+
+function __importStar(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result.default = mod;
+    return result;
+}
+
+function __importDefault(mod) {
+    return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+function __classPrivateFieldGet(receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+}function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}var m,x=m||(m={});x.Pop="POP";x.Push="PUSH";x.Replace="REPLACE";var y="production"!=="production"?function(a){return Object.freeze(a)}:function(a){return a};function z(a,b){if(!a){"undefined"!==typeof console&&console.warn(b);try{throw Error(b);}catch(g){}}}function A(a){a.preventDefault();a.returnValue="";}
+function B(){var a=[];return {get length(){return a.length},push:function(b){a.push(b);return function(){a=a.filter(function(a){return a!==b});}},call:function(b){a.forEach(function(a){return a&&a(b)});}}}function D(){return Math.random().toString(36).substr(2,8)}function E(a){var b=a.pathname,g=a.search;a=a.hash;return (void 0===b?"/":b)+(void 0===g?"":g)+(void 0===a?"":a)}
+function F(a){var b={};if(a){var g=a.indexOf("#");0<=g&&(b.hash=a.substr(g),a=a.substr(0,g));g=a.indexOf("?");0<=g&&(b.search=a.substr(g),a=a.substr(0,g));a&&(b.pathname=a);}return b}
+function createBrowserHistory(a){function b(){var a=h.location,d=f.state||{};return [d.idx,y({pathname:a.pathname,search:a.search,hash:a.hash,state:d.usr||null,key:d.key||"default"})]}function g(a){return "string"===typeof a?a:E(a)}function t(a,d){void 0===d&&(d=null);return y(_extends({},l,{},"string"===typeof a?F(a):a,{state:d,key:D()}))}function v(a){n=a;a=b();q=a[0];l=a[1];c.call({action:n,location:l});}function w(a,d){function c(){w(a,d);}var k=m.Push,C=t(a,d);if(!e.length||(e.call({action:k,
+location:C,retry:c}),!1)){var b=[{usr:C.state,key:C.key,idx:q+1},g(C)];C=b[0];b=b[1];try{f.pushState(C,"",b);}catch(G){h.location.assign(b);}v(k);}}function u(a,d){function c(){u(a,d);}var b=m.Replace,k=t(a,d);e.length&&(e.call({action:b,location:k,retry:c}),1)||(k=[{usr:k.state,key:k.key,idx:q},g(k)],f.replaceState(k[0],"",k[1]),v(b));}function r(a){f.go(a);}void 0===a&&(a={});a=a.window;var h=void 0===a?document.defaultView:a,f=h.history,p=null;h.addEventListener("popstate",function(){if(p)e.call(p),
+p=null;else {var a=m.Pop,d=b(),c=d[0];d=d[1];if(e.length)if(null!=c){var f=q-c;f&&(p={action:a,location:d,retry:function(){r(-1*f);}},r(f));}else "production"!=="production"?z(!1,"You are trying to block a POP navigation to a location that was not created by the history library. The block will fail silently in production, but in general you should do all navigation with the history library (instead of using window.history.pushState directly) to avoid this situation."):void 0;else v(a);}});var n=
+m.Pop;a=b();var q=a[0],l=a[1],c=B(),e=B();null==q&&(q=0,f.replaceState(_extends({},f.state,{idx:q}),""));return {get action(){return n},get location(){return l},createHref:g,push:w,replace:u,go:r,back:function(){r(-1);},forward:function(){r(1);},listen:function(a){return c.push(a)},block:function(a){var d=e.push(a);1===e.length&&h.addEventListener("beforeunload",A);return function(){d();e.length||h.removeEventListener("beforeunload",A);}}}};
+function createHashHistory(a){function b(){var a=F(f.location.hash.substr(1)),c=a.pathname,b=a.search;a=a.hash;var e=p.state||{};return [e.idx,y({pathname:void 0===c?"/":c,search:void 0===b?"":b,hash:void 0===a?"":a,state:e.usr||null,key:e.key||"default"})]}function g(){if(n)k.call(n),n=null;else {var a=m.Pop,c=b(),e=c[0];c=c[1];if(k.length)if(null!=e){var f=l-e;f&&(n={action:a,location:c,retry:function(){h(-1*f);}},h(f));}else "production"!=="production"?z(!1,"You are trying to block a POP navigation to a location that was not created by the history library. The block will fail silently in production, but in general you should do all navigation with the history library (instead of using window.history.pushState directly) to avoid this situation."):
+void 0;else w(a);}}function t(a){var d=document.querySelector("base"),c="";d&&d.getAttribute("href")&&(d=f.location.href,c=d.indexOf("#"),c=-1===c?d:d.slice(0,c));return c+"#"+("string"===typeof a?a:E(a))}function v(a,b){void 0===b&&(b=null);return y(_extends({},c,{},"string"===typeof a?F(a):a,{state:b,key:D()}))}function w(a){q=a;a=b();l=a[0];c=a[1];e.call({action:q,location:c});}function u(a,c){function d(){u(a,c);}var b=m.Push,e=v(a,c);"production"!=="production"?z("/"===e.pathname.charAt(0),
+"Relative pathnames are not supported in hash history.push("+JSON.stringify(a)+")"):void 0;if(!k.length||(k.call({action:b,location:e,retry:d}),!1)){var g=[{usr:e.state,key:e.key,idx:l+1},t(e)];e=g[0];g=g[1];try{p.pushState(e,"",g);}catch(H){f.location.assign(g);}w(b);}}function r(a,c){function d(){r(a,c);}var e=m.Replace,b=v(a,c);"production"!=="production"?z("/"===b.pathname.charAt(0),"Relative pathnames are not supported in hash history.replace("+JSON.stringify(a)+")"):void 0;k.length&&(k.call({action:e,
+location:b,retry:d}),1)||(b=[{usr:b.state,key:b.key,idx:l},t(b)],p.replaceState(b[0],"",b[1]),w(e));}function h(a){p.go(a);}void 0===a&&(a={});a=a.window;var f=void 0===a?document.defaultView:a,p=f.history,n=null;f.addEventListener("popstate",g);f.addEventListener("hashchange",function(){var a=b()[1];E(a)!==E(c)&&g();});var q=m.Pop;a=b();var l=a[0],c=a[1],e=B(),k=B();null==l&&(l=0,p.replaceState(_extends({},p.state,{idx:l}),""));return {get action(){return q},get location(){return c},createHref:t,push:u,
+replace:r,go:h,back:function(){h(-1);},forward:function(){h(1);},listen:function(a){return e.push(a)},block:function(a){var c=k.push(a);1===k.length&&f.addEventListener("beforeunload",A);return function(){c();k.length||f.removeEventListener("beforeunload",A);}}}};
+function createMemoryHistory(a){function b(a,b){void 0===b&&(b=null);return y(_extends({},n,{},"string"===typeof a?F(a):a,{state:b,key:D()}))}function g(a,b,f){return !l.length||(l.call({action:a,location:b,retry:f}),!1)}function t(a,b){p=a;n=b;q.call({action:p,location:n});}function v(a,e){var c=m.Push,d=b(a,e);"production"!=="production"?z("/"===n.pathname.charAt(0),"Relative pathnames are not supported in memory history.push("+JSON.stringify(a)+")"):void 0;g(c,d,function(){v(a,e);})&&
+(f+=1,h.splice(f,h.length,d),t(c,d));}function w(a,e){var c=m.Replace,d=b(a,e);"production"!=="production"?z("/"===n.pathname.charAt(0),"Relative pathnames are not supported in memory history.replace("+JSON.stringify(a)+")"):void 0;g(c,d,function(){w(a,e);})&&(h[f]=d,t(c,d));}function u(a){var b=Math.min(Math.max(f+a,0),h.length-1),c=m.Pop,d=h[b];g(c,d,function(){u(a);})&&(f=b,t(c,d));}void 0===a&&(a={});var r=a;a=r.initialEntries;r=r.initialIndex;var h=(void 0===a?["/"]:a).map(function(a){var b=
+y(_extends({pathname:"/",search:"",hash:"",state:null,key:D()},"string"===typeof a?F(a):a));"production"!=="production"?z("/"===b.pathname.charAt(0),"Relative pathnames are not supported in createMemoryHistory({ initialEntries }) (invalid entry: "+JSON.stringify(a)+")"):void 0;return b}),f=Math.min(Math.max(null==r?h.length-1:r,0),h.length-1),p=m.Pop,n=h[f],q=B(),l=B();return {get index(){return f},get action(){return p},get location(){return n},createHref:function(a){return "string"===typeof a?
+a:E(a)},push:v,replace:w,go:u,back:function(){u(-1);},forward:function(){u(1);},listen:function(a){return q.push(a)},block:function(a){return l.push(a)}}};var defaultProps = {
+    entryPointProps: {},
+    config: {},
+    featureFlags: {},
+};
+var history = createBrowserHistory(window);
+var RouterCtx = React.createContext({
+    props: defaultProps,
+    history: history,
+    setNextRoute: function () { },
+    cancelRouteChange: function () { },
+    cancelChange: null,
+    nextRoute: {
+        pathname: window.location.pathname,
+        hash: window.location.hash,
+        search: window.location.search,
+    },
+    abTestFlags: {},
+});
+var RouterProvider = function (_a) {
+    var children = _a.children, _b = _a.abTestFlags, abTestFlags = _b === void 0 ? {} : _b, props = __rest(_a, ["children", "abTestFlags"]);
+    var _c = React.useState({
+        pathname: window.location.pathname,
+        hash: window.location.hash,
+        search: window.location.search,
+    }), nextRoute = _c[0], setNextRoute = _c[1];
+    var _d = React.useState(null), cancelChange = _d[0], setCancelRouteChange = _d[1];
+    var cancelRouteChange = function () { return setCancelRouteChange(nextRoute); };
+    React.useEffect(function () {
+        transclusionEventing.getEventEmitter().emit('robotnik.ab_test_flags', abTestFlags);
+    }, [abTestFlags]);
+    return (React__default['default'].createElement(RouterCtx.Provider, { value: {
+            props: __assign(__assign({}, defaultProps), props),
+            abTestFlags: abTestFlags,
+            history: history,
+            setNextRoute: setNextRoute,
+            nextRoute: nextRoute,
+            cancelRouteChange: cancelRouteChange,
+            cancelChange: cancelChange,
+        } }, children));
+};
+var useRouter = function () { return React.useContext(RouterCtx); };var resolveRoute = function (path, routes) {
+    var cancel = function () { };
+    var p = new Promise(function (res, rej) { return __awaiter(void 0, void 0, void 0, function () {
+        var routeConfig;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    cancel = rej;
+                    routeConfig = routes[path];
+                    return [4 /*yield*/, Promise.all(routeConfig.map(function (mod) { return __awaiter(void 0, void 0, void 0, function () {
+                            var name, module;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        name = typeof mod !== 'string' ? mod.name : mod;
+                                        return [4 /*yield*/, System.import(name)];
+                                    case 1:
+                                        module = _a.sent();
+                                        if (!module.default.init) return [3 /*break*/, 3];
+                                        return [4 /*yield*/, module.default.init()];
+                                    case 2:
+                                        _a.sent();
+                                        _a.label = 3;
+                                    case 3: return [2 /*return*/];
+                                }
+                            });
+                        }); }))];
+                case 1:
+                    _a.sent();
+                    res(path);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    return {
+        schedule: p,
+        cancel: cancel,
+    };
+};
+var useRoute = function () {
+    var _a = useRouter(), config = _a.props.config, nextRoute = _a.nextRoute, setNextRoute = _a.setNextRoute, history = _a.history, cancelChange = _a.cancelChange;
+    // route to control render tree
+    var _b = React.useState(null), route = _b[0], setRoute = _b[1];
+    // scheduled route change reference
+    var scheduledChangeRef = React.useRef(null);
+    var plannedRouteRef = React.useRef(null);
+    // listen for changes in history
+    React.useEffect(function () {
+        history.listen(function (_a) {
+            var location = _a.location;
+            // if the locations is not planned
+            // assuming it's NOT a planned route change
+            if (plannedRouteRef.current &&
+                // @TODO: this should probably check for complete location object macthing?
+                plannedRouteRef.current.pathname !== location.pathname) {
+                // update planned route
+                plannedRouteRef.current = location;
+                //update route
+                setNextRoute(location);
+            }
+        });
+    }, []);
+    React.useEffect(function () {
+        if (nextRoute) {
+            // if any scheduled change, cancel it
+            // this allows to stop navigation during pre-loading
+            if (scheduledChangeRef.current !== null) {
+                scheduledChangeRef.current.cancel();
+            }
+            // assign new schedule
+            scheduledChangeRef.current = resolveRoute(nextRoute.pathname, config);
+            // once new schedule is done
+            scheduledChangeRef.current.schedule
+                .then(function (newRoute) {
+                // if the planned route is to the next route
+                // (assuming it's an external history event)
+                if (plannedRouteRef.current &&
+                    plannedRouteRef.current !== nextRoute) {
+                    // update planned route
+                    plannedRouteRef.current = nextRoute;
+                    // push to history
+                    history.push(nextRoute);
+                }
+                // only of first run, set plannedRouteRef to nextRoute
+                if (!plannedRouteRef.current)
+                    plannedRouteRef.current = nextRoute;
+                setRoute(newRoute);
+            })
+                .catch(function () { });
+        }
+    }, [nextRoute]);
+    React.useEffect(function () {
+        if (cancelChange &&
+            scheduledChangeRef.current &&
+            scheduledChangeRef.current.cancel) {
+            scheduledChangeRef.current.cancel();
+        }
+    }, [cancelChange]);
+    return route;
+};var getInitialComponent = function (elementId) {
+    if (!elementId)
+        return null;
+    var elem = document.querySelector("#" + elementId);
+    if (!elem)
+        return null;
+    return (React__default['default'].createElement("div", { id: elementId, dangerouslySetInnerHTML: {
+            __html: elem.innerHTML,
+        } }));
+};var usePage = function () {
+    var _a = useRouter().props, config = _a.config, _b = _a.hydrationTargetId, hydrationTargetId = _b === void 0 ? null : _b, _c = _a.entryPointProps, entryPointProps = _c === void 0 ? {} : _c;
+    var route = useRoute();
+    var Page = React.useMemo(function () {
+        if (!route) {
+            var element_1 = getInitialComponent(hydrationTargetId);
+            return function () { return element_1; };
+        }
+        // @TODO: handle un-existing routes (404)
+        var routeConfig = config[route];
+        var components = routeConfig.map(function (mod) {
+            // @TODO: handle errors
+            // and unexisting components
+            if (typeof mod !== 'string') {
+                return System.get(mod.name).default[mod.namedExport];
+            }
+            return System.get(mod).default[mod];
+        });
+        return function () { return (React__default['default'].createElement(React__default['default'].Fragment, null, components.map(function (component, i) {
+            var name = routeConfig[i].name;
+            var componentProps = entryPointProps[name];
+            return React__default['default'].createElement(component, __assign({ key: name }, componentProps));
+        }))); };
+    }, [route]);
+    return Page;
+};var RouterComponent = function () {
+    var Page = usePage();
+    React.useEffect(function () {
+        window.scrollTo(0, 0);
+    }, [Page]);
+    return React__default['default'].createElement(Page, null);
+};var WithRouter = function (Component) { return function (props) { return (React__default['default'].createElement(RouterCtx.Consumer, null, function (routerProps) { return React__default['default'].createElement(Component, __assign({}, props, routerProps)); })); }; };var Router = function (props) { return (React__default['default'].createElement(RouterProvider, __assign({}, props),
+    React__default['default'].createElement(RouterComponent, null))); };exports.Router=Router;exports.RouterCtx=RouterCtx;exports.WithRouter=WithRouter;exports.history=history;exports.useRouter=useRouter;Object.defineProperty(exports,'__esModule',{value:true});});

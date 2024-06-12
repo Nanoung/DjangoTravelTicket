@@ -93,7 +93,7 @@ class Cars(models.Model):
     type = models.ForeignKey(CarType, on_delete=models.CASCADE, related_name='cars')
 # Cela permet d'accéder à toutes les voitures d'un type de voiture spécifique en utilisant car_type.cars.all()
     def __str__(self):
-        return f" {self.type}"
+        return f" {self.immatriculation} -{self.type} "
     
 class Trajet(models.Model):
 
