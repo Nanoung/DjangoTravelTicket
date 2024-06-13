@@ -1,5 +1,6 @@
 {% load static %}
-{% include 'reservations/modal_detail.html' %}
+{% include 'reservations/modal_Tickets.html' %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,14 +12,152 @@
     <link rel="stylesheet" type="" href="{% static 'CssStyle/style_home.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+
+
+
 <body>
 
     <h1>Reservation Ticket</h1>
+    <div class="container">
+      <h1 class="mt-5">Informations Client</h1>
+      <form id="myForm" method="post" class="mt-3" action="{% url 'travel_tiket' urlelement.id_trajets urlelement.id_segments urlelement.id_horaires %}" data-trajet-id="{{ urlelement.id_trajets }}" data-segment-id="{{ urlelement.id_segments }}" data-horaire-id="{{ urlelement.id_horaires }}">
+        
+
+        <meta name="csrf-token" content="{{ csrf_token }}">
+
+        {{ urlelement.form.as_p }}
+        <!-- Champs cachés pour transmettre les IDs -->
+        <input type="hidden" name="id_trajet" value="{{ urlelement.id_trajets }}">
+        <input type="hidden" name="id_segment" value="{{ urlelement.id_segments }}">
+        <input type="hidden" name="id_horaire" value="{{ urlelement.id_horaires }}">
+        <button type="submit" class="btn btn-outline-warning">Valider</button>
+    </form>
     
+  </div>
+
+
+
+<script>
+
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            // Empêche la soumission traditionnelle du formulaire
+            var form = event.target;
+            var formData = new FormData(form);
+            var trajetId = form.getAttribute('data-trajet-id');
+            var segmentId = form.getAttribute('data-segment-id');
+            var horaireId = form.getAttribute('data-horaire-id');
+            var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            // var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+
+            
+    
+        // Utilisez les IDs comme vous le souhaitez
+            console.log('Trajet ID:', trajetId);
+            console.log('Segment ID:', segmentId);
+            console.log('Horaire ID:', horaireId);
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken // Incluez le token CSRF
+                }
+            }).then(response => {
+                console.log('okbien ok:');
+
+                if (response.ok) {
+                    console.log('okbien Soumission réussie:');
+
+                    // Soumission réussie, ouvrir le modal
+                    var modal = new bootstrap.Modal(document.getElementById('staticBackdrop_Ticket'));
+                    modal.show();
+                } else {
+                    // Gérer l'erreur de soumission
+                    alert('Erreur lors de la soumission du formulaire');
+                }
+            }).catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la soumission du formulaire');
+            });
+        });
+    
+    
+    
+    $(document).ready(function() {
+            $('#staticBackdrop_Ticket').on('show.bs.modal', function (event) {
+                var link = $(event.relatedTarget); // Button that triggered the modal
+                var form = document.getElementById('myForm');
+                var trajetId = form.getAttribute('data-trajet-id');
+                var segmentId = form.getAttribute('data-segment-id');
+                var horaireId = form.getAttribute('data-horaire-id');
+    
+    
+                // var trajetId = link.data('id'); // Extract info from data-* attributes
+                var modal = $(this);
+                console.log(trajetId)
+    
+                $.ajax({
+                    // url: '/TravelTickets_Detail_trajet/' + trajetId + '/' + segmentId + '/',
+                    url: '/TravelTickets_Travel_tiket/' + (trajetId ? trajetId : '0') + '/' + (segmentId ? segmentId : '0') + '/' + (horaireId ? horaireId : '0') + '/', // URL de la vue Django avec les ID du trajet et du segment
+    
+                    method: 'GET',
+                    success: function(data) {
+                        var trajet = data.trajet; // Récupère les détails du trajet depuis la réponse JSON
+                        var avantages = trajet.avantages; // Liste des avantages
+                        var avantagesHtml = '<ul>';
+    
+                    // Utilisation d'une boucle `for` pour itérer sur les avantages
+                        for (var i = 0; i < avantages.length; i++) {
+                            avantagesHtml += '<li> <u>' + avantages[i].nom + '</u>: ' + avantages[i].description + '</li>';
+                            console.log(avantages[i].nom)
+                        }
+                        avantagesHtml += '</ul>';
+                        modal.find('#staticBackdropLabel').html(`
+                            <p> Ticket de Voyage </p>
+                            <p>${trajet.heure_depart}H&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong> ${trajet.depart}---------- --${trajet.arrivee} </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${trajet.heure_arrivee}H</p>  `); // You can set a dynamic title here
+                        modal.find('.modal-body').html(`
+                            <p><strong>Départ :</strong> ${trajet.depart}</p>
+                            <p><strong>Arrivée :</strong> ${trajet.arrivee}</p>
+                            <p><strong>Place Nombre :</strong> ${trajet.nombre_place}</p>
+                            <p><strong>Type de Car :</strong> ${trajet.type}</p>
+                            <p><strong>Immatriculation du Car :</strong> ${trajet.car}</p>
+                            <p><strong>Prix :</strong> ${trajet.prix}</p>
+                            <p><strong>Avantages :</strong></p>
+    
+                            ${avantagesHtml}
+                            <p><strong>Information :</strong></p> 
+                        
+    
+    
+    
+    
+    
+                        `);
+                        modal.find('.Continuer').html(`
+                            <a  href="/TravelTickets_Reservation/${trajet.id}/${trajet.id_segment}/${trajet.id_horaire}/"> Continuer </a>
+                        
+    
+                        `);
+                    },
+                    error: function() {
+                        alert('Impossible de charger les détails du segment.');
+                    }
+                });
+            });
+        });
+</script>
 
 
 
 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

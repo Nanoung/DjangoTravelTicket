@@ -40,6 +40,7 @@ class TrajetHoraireForm(forms.Form):
         'min': date.today().isoformat(),
         'value': date.today().isoformat()
     }))
+    Nombre_place=forms.IntegerField(initial=1, min_value=1)
 
 class ClientForm(forms.ModelForm):
     class Meta:

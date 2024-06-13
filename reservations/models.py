@@ -169,10 +169,26 @@ class TrajetSegment(models.Model):
     trajet_id = models.ForeignKey(Trajet, on_delete=models.CASCADE)
     segment_id = models.ForeignKey(Segment, on_delete=models.CASCADE)
     prix_segment = models.DecimalField(max_digits=10, decimal_places=2 ,default=0.0)
+    place_disponible=models.IntegerField(default=0)
 
 print("Bien ok")
 
 """
+#Pöur modifier les champs  place_disponible pour les instance enregistrer avant 
+    def save(self, *args, **kwargs):
+        # Récupérez le trajet associé
+        trajet = self.trajet_id
+        
+        # Assurez-vous que le trajet a une voiture associée
+        if trajet and trajet.car:
+            self.place_disponible = trajet.car.nombre_places
+
+        # Appel à la méthode save de la classe parente pour enregistrer les modifications
+        super(TrajetSegment, self).save(*args, **kwargs)
+
+
+
+
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_horaire(sender, instance, action, **kwargs):
         horaires = instance.horaires.all()
@@ -230,12 +246,15 @@ def update_other_segments(sender, instance, action, reverse, model, pk_set, **kw
                 print("Erreur lors de l'ajout du segment : ")
 
     instance.save()
+
 """
+
 
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
     #segmentss = Segment.objects.filter(trajet=1)
-    if action == "post_add" or action == "post_clear":
+    if action == "post_add" or action == "post_clear" :
+        
         
         with transaction.atomic():
             tajet_segment, created = Segment.objects.get_or_create(
@@ -312,9 +331,11 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_segment_prix(sender, instance, action, **kwargs):
     if action == "post_add":
+        nombre_place=instance.car.nombre_places
         car_type = instance.car.type
         for segment in instance.segments.all():
-            trajet_segment, created = TrajetSegment.objects.get_or_create(trajet_id = instance, segment_id = segment)
+            trajet_segment, created = TrajetSegment.objects.get_or_create(trajet_id = instance, segment_id = segment )
+            trajet_segment.place_disponible=nombre_place
             if car_type.nom == 'Premium':
                 trajet_segment.prix_segment = segment.prix * Decimal('1.375') 
             else:
@@ -421,8 +442,8 @@ class Reservation(models.Model):
     trajet_id = models.ForeignKey('Trajet', on_delete=models.CASCADE, related_name='reservations' , null=True)     
     segment_id = models.ForeignKey('Segment',  on_delete=models.CASCADE, related_name='reservations' , null=True)
     client_id = models.ForeignKey(Client, on_delete=models.PROTECT)
-    numero_reservation = models.CharField(max_length=100, editable=False, unique=True)  # Numéro de réservation unique
-    nombre_de_place = models.IntegerField()  # Nombre de places réservées
+    numero_reservation = models.CharField(max_length=100, editable=False, unique=True , null=True , blank=True)  # Numéro de réservation unique
+    nombre_de_place = models.IntegerField(default=1)  # Nombre de places réservées
     date_reservation = models.DateTimeField(auto_now_add=True)  # Date de la réservation
 
     def save(self, *args, **kwargs):
