@@ -49,7 +49,7 @@ def rechercher_trajet(request):
             for trajet in trajets:
                 #for horaire in trajet.horaires.all():
                     #if horaire.heure_depart.date() == date_depart:
-                segments_filtres=trajet.segments.filter(depart=adresse_depart, arrivee=adresse_arrivee)
+                segments_filtres=trajet.segments.filter(depart=adresse_depart, arrivee=adresse_arrivee , )
 
                 for segment in segments_filtres:
                     trajet_segments = TrajetSegment.objects.filter(segment_id=segment.id , trajet_id = trajet.id , place_disponible__gte=nombre_place)
@@ -58,7 +58,8 @@ def rechercher_trajet(request):
                          
                 
 
-                        horairesegments = segment.horairesegment.all()  # Utilisation correcte sans les parenthèses
+                        horairesegments = segment.horairesegment.all() 
+                          # Utilisation correcte sans les parenthèses
                         segments_disponibles.append((trajet, segment, horairesegments,trajet_segment))
                                 #segments_disponibles = trajet.segments.filter(depart=adresse_depart, arrivee=adresse_arrivee)
                         #trajets_disponibles.append((trajet, horaire, segments_filtrés))
@@ -145,7 +146,7 @@ def Travel_tiket(request , id_trajet , id_segment , id_horaire):
                 )
                 client.save()
 
-                reservation = Reservation(
+                reservation = Reservation.objects.create(
                 trajet_id=id_trajet,
                 segment_id=id_segment,
                 client_id=client.id,
@@ -160,21 +161,21 @@ def Travel_tiket(request , id_trajet , id_segment , id_horaire):
 
 
 
-        try:
-            # forms = TrajetHoraireForm(request.POST)
+        # try:
+        #     # forms = TrajetHoraireForm(request.POST)
 
 
 
-            #client=Client.objeect
-            trajet = Trajet.objects.get(id=id_trajet)
-            segment = get_object_or_404(Segment, id=id_segment)
-            trajet_segments = TrajetSegment.objects.get(segment_id=id_segment , trajet_id = id_trajet)
-            avantages = trajet.car.type.avantages
-            horaire=SegmentHoraire.objects.get(id=id_horaire)
-            nombre_place = request.session.get('nombre_place')            # nom=forms.cleaned_data['nom']
-            # prenoms=forms.cleaned_data['prenoms']
-            # email=forms.cleaned_data['email']
-            # telephone=forms.cleaned_data['telephone']
+        #     #client=Client.objeect
+        #     trajet = Trajet.objects.get(id=id_trajet)
+        #     segment = get_object_or_404(Segment, id=id_segment)
+        #     trajet_segments = TrajetSegment.objects.get(segment_id=id_segment , trajet_id = id_trajet)
+        #     avantages = trajet.car.type.avantages
+        #     horaire=SegmentHoraire.objects.get(id=id_horaire)
+        #     nombre_place = request.session.get('nombre_place')            # nom=forms.cleaned_data['nom']
+        #     # prenoms=forms.cleaned_data['prenoms']
+        #     # email=forms.cleaned_data['email']
+        #     # telephone=forms.cleaned_data['telephone']
 
 
 
@@ -184,34 +185,34 @@ def Travel_tiket(request , id_trajet , id_segment , id_horaire):
     
 
 
-            trajets={
+        #     trajets={
                 
-                "arrivee":segment.arrivee,
-                'id':trajet.id,
-                "depart" : segment.depart,
-                "id_segment" : segment.id,
-                "prix" : trajet_segments.prix_segment,
-                "car" : trajet.car.immatriculation,
-                "type" : trajet.car.type.nom,
-                "heure_depart":horaire.heure_depart,  
-                "heure_arrivee":horaire.heure_arrivee,
-                "id_horaire" : horaire.id,
-                 "nombre_place" : nombre_place,
-                # "nom" : nom,
-                # "prenoms": prenoms,
-                # "email" : email,
-                # "telephone" :telephone,
+        #         "arrivee":segment.arrivee,
+        #         'id':trajet.id,
+        #         "depart" : segment.depart,
+        #         "id_segment" : segment.id,
+        #         "prix" : trajet_segments.prix_segment,
+        #         "car" : trajet.car.immatriculation,
+        #         "type" : trajet.car.type.nom,
+        #         "heure_depart":horaire.heure_depart,  
+        #         "heure_arrivee":horaire.heure_arrivee,
+        #         "id_horaire" : horaire.id,
+        #          "nombre_place" : nombre_place,
+        #         # "nom" : nom,
+        #         # "prenoms": prenoms,
+        #         # "email" : email,
+        #         # "telephone" :telephone,
 
-                "avantages": list(avantages.values('id', 'nom', 'description'))
-            }
+        #         "avantages": list(avantages.values('id', 'nom', 'description'))
+        #     }
             
 
-        # trajet_json = serializers.serialize('json', [trajets])
-        # trajet_data = json.loads(trajet_json)
-            return JsonResponse({'trajet': trajets})
-        except Trajet.DoesNotExist:
-            return JsonResponse({'error': 'Trajet non trouvé'}, status=404)
-        # except Exception as e:
+        # # trajet_json = serializers.serialize('json', [trajets])
+        # # trajet_data = json.loads(trajet_json)
+        #     return JsonResponse({'trajet': trajets})
+        # except Trajet.DoesNotExist:
+        #     return JsonResponse({'error': 'Trajet non trouvé'}, status=404)
+        # # except Exception as e:
         #     return JsonResponse({'error': str(e)}, status=500)
 
 

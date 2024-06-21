@@ -56,13 +56,13 @@
                     avantagesHtml += '</ul>';
                     modal.find('#staticBackdropLabel').html(`<p>${trajet.heure_depart}H&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong> ${trajet.depart}---------- --${trajet.arrivee} </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${trajet.heure_arrivee}H</p>  `); // You can set a dynamic title here
                     modal.find('.modal-body').html(`
-                        <p><strong>Départ :</strong> ${trajet.depart}</p>
-                        <p><strong>Arrivée :</strong> ${trajet.arrivee}</p>
+                        <p><strong>Adress Départ :</strong> ${trajet.depart}</p>
+                        <p><strong>adresse Arrivée :</strong> ${trajet.arrivee}</p>
                         <p><strong>Segment ID :</strong> ${trajet.id}</p>
                         <p><strong>Type de Car :</strong> ${trajet.type}</p>
                         <p><strong>Immatriculation du Car :</strong> ${trajet.car}</p>
                         <p><strong>Prix :</strong> ${trajet.prix}</p>
-                        <p><strong>Avantages :</strong></p>
+                        <p><strong>Avantages lie au a cet type de voyage  :</strong></p>
 
                         ${avantagesHtml}
                         <p><strong>Information :</strong></p> 
@@ -119,8 +119,8 @@
                     
                             
                             <a href="{% url 'detail_trajet' trajet.id segment.id horaire.id %}"  class="btn "  data-id="{{ trajet.id }}-{{ segment.id }}-{{ horaire.id }}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                <li class="list-group-item"> {{ horaire.heure_depart|time:"H\hi" }}  </li>
-                                <li class="list-group-item"> {{ segment.depart }} - {{ segment.arrivee }} -  {{ segment.id }}   -- Prix: {{ trajet_segment.prix_segment }}  FCFA   {{ trajet.car.type }}  --  {{ trajet.id }} </li>
+                                <li class="list-group-item"> Depart de:{{ horaire.heure_depart|time:"H\hi" }}  </li>
+                                <li class="list-group-item"> {{ segment.depart }} - {{ segment.arrivee }}    -- Prix: {{ trajet_segment.prix_segment }}FCFA   Offre:{{ trajet.car.type }}  --  {{ trajet.id }} </li>
                             </a>
                             <a  href="{% url 'reservation_trajet' trajet.id segment.id horaire.id %}" class="btn btn-outline-warning">Continuer</a>
 

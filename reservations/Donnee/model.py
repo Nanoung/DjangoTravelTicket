@@ -114,8 +114,6 @@ class Trajet(models.Model):
     date_depart= models.DateField(default=timezone.now)
     adress_depart=models.CharField(choices=Ville.choices, max_length=50)
     adress_arrivee=models.CharField(choices=Ville.choices, max_length=50)
-    arrets = models.ManyToManyField('Arret', related_name='Trajet' )
-
     nom_voyage=models.CharField(max_length=100 , blank=True)
     horaires = models.ManyToManyField('Horaire',related_name='Trajet')
     segments = models.ManyToManyField('Segment', related_name='Trajet')
@@ -128,25 +126,6 @@ class Trajet(models.Model):
             self.nom_voyage = f"{self.adress_depart}_{self.adress_arrivee}"
         super(Trajet, self).save(*args, **kwargs)
 
-class Arret(models.Model):
-    nom=models.CharField(choices=Ville.choices, max_length=50)
-    def __str__(self):
-       
-        return f"{self.nom}"
-
-"""
-@receiver(post_save, sender=Trajet)
-def update_segment_prix(sender, instance, **kwargs):
-    seg=instance.segments.all()
-    print(seg.count())
-
-    print("Signal triggered")
-    if instance.car.type.nom == 'Premium':
-        for segment in instance.segments.all():
-            segment.prix += 1000
-            segment.save()
-    print(instance.car.type)
-"""
 
 class Horaire(models.Model):
     heure_depart = models.TimeField()
@@ -164,7 +143,7 @@ class Segment(models.Model):
     #ordre = models.IntegerField(blank=True)
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     duree = models.IntegerField(help_text="Durée en minutes", default=480)
-    horairesegment = models.ManyToManyField('SegmentHoraire',related_name='segments', blank=True)
+    horairesegment = models.ManyToManyField('SegmentHoraire',related_name='segments',null=True , blank=True)
 
     def __str__(self):
         horaires = self.horairesegment.all()  # Récupère tous les SegmentHoraire associés
@@ -179,8 +158,9 @@ class TrajetSegment(models.Model):
 
 print("Bien ok")
 
+"""
 #Pöur modifier les champs  place_disponible pour les instance enregistrer avant 
-def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         # Récupérez le trajet associé
         trajet = self.trajet_id
         
@@ -192,7 +172,7 @@ def save(self, *args, **kwargs):
         super(TrajetSegment, self).save(*args, **kwargs)
 
 
-"""
+
 
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_horaire(sender, instance, action, **kwargs):
@@ -364,22 +344,7 @@ def update_heure_arrivee(sender, instance, action, **kwargs):
                     horaire.heure_arrivee = heure_arrivee
                     horaire.save()
 
-"""
 
-
-    def save(self, *args, **kwargs):
-        if not self.ordre:
-            # Définir l'ordre par défaut ou calculé ici
-            dernier_ordre=Trajet.Segment.All().aggregate(max_ordre=max('ordre'))['max_ordre'] or 0
-            self.ordre = dernier_ordre + 1
-        super().save(*args, **kwargs)
-
-    
-    def save(self, *args, **kwargs):
-        if not self.pk:  # Si c'est un nouveau segment
-            self.ordre = self.Trajet.Segments.count() + 1  # Calculez l'ordre
-        super().save(*args, **kwargs)
-"""
 class SegmentHoraire(models.Model):
     heure_depart = models.TimeField()
     heure_arrivee = models.TimeField(null=True , blank=True)
@@ -390,46 +355,7 @@ class SegmentHoraire(models.Model):
         #horaires_str = ", ".join([str(horaire) for horaire in horaires])
         return f"{self.heure_depart}"
 
-"""
-@receiver(pre_save, sender=Segment)
 
-def calculer_heures(sender, instance, **kwargs):
-        # Obtenez le trajet associé
-        trajet = instance.Trajet
-
-        # Obtenez l'horaire associé
-        try:
-            horaire = Trajet.Horaire.all()
-            #heure_depart_trajet = datetime.combine(trajet.date_depart, horaire.heure_depart)
-        except Horaire.DoesNotExist:
-            heure_depart_trajet = timezone.now()
-
-        # Si l'adresse de départ du segment correspond à celle du trajet
-        if instance.depart == trajet.adress_depart:
-            for horaire in horaire:
-
-                instance.horairesegment.heure_depart = horaire.heure_depart
-
-        else:
-                instance.horairesegment.heure_depart = timezone.now()
-
-        elif not instance.SegmentHoraire.heure_depart:
-            # Trouvez le segment précédent dans l'ordre
-            try:
-                dernier_segments = Trajet.instance.objects.filter( ordre=instance.ordre - 1).latest('ordre')
-                if dernier_segments.arrivee == instance.depart:
-                    for dernier_segment in dernier_segments:
-
-                        instance.horairesegment.heure_depart = dernier_segment.heure_arrivee
-                else:
-                    instance.heure_depart = timezone.now()
-            except Segment.DoesNotExist:
-                instance.horairesegment.heure_depart = timezone.now()
-            
-        # Calculez l'heure d'arrivée
-        if not instance.horairesegment.heure_arrivee:
-            instance.horairesegment.heure_arrivee = instance.horairesegment.heure_depart + timedelta(minutes=instance.duree)
-        """
 # Attacher le signal pre_save pour exécuter calculer_heures avant la sauvegarde du segmentHoraire
 #models.signals.pre_save.connect(SegmentHoraire.calculer_heures, sender=SegmentHoraire)
 

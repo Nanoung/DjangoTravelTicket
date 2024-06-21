@@ -121,15 +121,20 @@
                             <p> Ticket de Voyage </p>
                             <p>${trajet.heure_depart}H&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong> ${trajet.depart}---------- --${trajet.arrivee} </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${trajet.heure_arrivee}H</p>  `); // You can set a dynamic title here
                         modal.find('.modal-body').html(`
-                            <p><strong>Départ :</strong> ${trajet.depart}</p>
-                            <p><strong>Arrivée :</strong> ${trajet.arrivee}</p>
+                            <p><strong>Nom :</strong> $</p>
+                            <p><strong>Nom :</strong> $</p>
+
+                            <p><strong> Départ  de:</strong> ${trajet.heure_depart}</p>
+
+                            <p><strong>adresse Départ :</strong> ${trajet.depart}</p>
+                            <p><strong> Adresse Arrivée :</strong> ${trajet.arrivee}</p>
                             <p><strong>Place Nombre :</strong> ${trajet.nombre_place}</p>
                             <p><strong>Type de Car :</strong> ${trajet.type}</p>
                             <p><strong>Immatriculation du Car :</strong> ${trajet.car}</p>
                             <p><strong>Prix :</strong> ${trajet.prix}</p>
                             <p><strong>Avantages :</strong></p>
     
-                            ${avantagesHtml}
+                            
                             <p><strong>Information :</strong></p> 
                         
     
@@ -139,7 +144,7 @@
     
                         `);
                         modal.find('.Continuer').html(`
-                            <a  href="/TravelTickets_Reservation/${trajet.id}/${trajet.id_segment}/${trajet.id_horaire}/"> Continuer </a>
+                            <a  href="/TravelTickets_Reservation/${trajet.id}/${trajet.id_segment}/${trajet.id_horaire}/"> Telecharger </a>
                         
     
                         `);

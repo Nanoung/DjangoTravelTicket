@@ -1,9 +1,12 @@
 from django.contrib import admin
 
-from reservations.models import Avantage, CarType, Cars, Client, Horaire, Reservation, Segment, SegmentHoraire, Trajet
+from reservations.models import Arret, Avantage, CarType, Cars, Client, Horaire, Reservation, Segment, SegmentHoraire, Trajet
 
 class TrajetAdmin(admin.ModelAdmin):
     list_display = ( 'id','adress_depart','adress_arrivee')
+    exclude = ('nom_voyage',)
+    class Media:
+        js = ('jsStyle/script_admin.js',)
 
 
 class ClientAdmin(admin.ModelAdmin):
@@ -29,11 +32,15 @@ class CarTypeAdmin(admin.ModelAdmin):
 
 class SegmentHoraireAdmin(admin.ModelAdmin):
     time_format = '%H:%M'
-    list_display =('id','heure_depart','heure_arrivee')
+    list_display =('id','heure_depart','heure_arrivee') 
+class ArretAdmin(admin.ModelAdmin):
+    list_display =('id','nom')
 
-    
+    class Media:
+        js = ('jsStyle/script_admin.js',)
 
 
+        
 
 admin.site.register(Trajet,TrajetAdmin) #permet de faire mise a jour de admin
 admin.site.register(Avantage,AvantageAdmin) #permet de faire mise a jour de admin
@@ -44,6 +51,8 @@ admin.site.register(Segment,SegmentAdmin)
 admin.site.register(CarType,CarTypeAdmin)
 admin.site.register(Client,ClientAdmin)
 admin.site.register(SegmentHoraire,SegmentHoraireAdmin)
+admin.site.register(Arret,ArretAdmin)
+
 
 
 
