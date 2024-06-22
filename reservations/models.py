@@ -1,5 +1,7 @@
 from datetime import *
 from decimal import Decimal
+from itertools import combinations
+
 from django.utils import timezone
 #from datetime import date, datetime, timedelta, timezone
 import uuid
@@ -9,6 +11,8 @@ from django.dispatch import receiver
 from django.db.models.signals import m2m_changed
 from django.db.models.signals import post_save
 from django.db import transaction
+from django.db.models import Q
+
 
 
 
@@ -127,7 +131,6 @@ class Trajet(models.Model):
 # Utiliser l'objet datetime comme valeur par défaut pour le champ date_depart
     #date_depart = models.DateField(default=date_obj)
 
-    prix = models.DecimalField(max_digits=10, decimal_places=2 , null= True)
     date_depart= models.DateField(default=timezone.now)
     adress_depart=models.CharField(choices=get_ville_choices, max_length=50)
     adress_arrivee=models.CharField(choices=get_ville_choices,  max_length=50)
@@ -135,7 +138,7 @@ class Trajet(models.Model):
 
     nom_voyage=models.CharField(max_length=100 , blank=True)
     horaires = models.ManyToManyField('Horaire',related_name='Trajet')
-    segments = models.ManyToManyField('Segment', related_name='Trajet')
+    segments = models.ManyToManyField('Segment', related_name='Trajet' , blank=True)
     car = models.ForeignKey(Cars, on_delete=models.CASCADE, related_name='Trajet' , null=True)  # Relation one-to-many
 
 
@@ -144,6 +147,49 @@ class Trajet(models.Model):
         if self.adress_depart and self.adress_arrivee:
             self.nom_voyage = f"{self.adress_depart}_{self.adress_arrivee}"
         super(Trajet, self).save(*args, **kwargs)
+
+    def create_segments(self):  
+            self.segments.clear()      
+            arrets = self.arrets.all()
+            Ville_depart = Ville.objects.get(nom=self.adress_depart)
+            Ville_arrivee = Ville.objects.get(nom=self.adress_arrivee)
+
+            depart_ordre = Ville_depart.ordre
+            arrivee_ordre = Ville_arrivee.ordre
+
+            if (depart_ordre - arrivee_ordre) > 0:
+                    arrets_ordonnee=arrets.order_by('-ville__ordre')
+            else:
+                    arrets_ordonnee=arrets.order_by('ville__ordre')
+            liste=[self.adress_depart]
+            for arret in arrets_ordonnee:
+                    liste.append(arret)
+            liste.append(self.adress_arrivee)
+            for depart_list, arrivee_list in combinations(liste, 2):
+                    prix_segment=Prix_segment.objects.get(
+                        (Q(depart=depart_list, arrivee=arrivee_list) | Q(depart=arrivee_list, arrivee=depart_list))
+                    )
+
+                    tajet_segment, created = Segment.objects.get_or_create(
+                    depart=depart_list, 
+                    arrivee=arrivee_list, 
+                    prix=prix_segment.prix
+                    )
+                    try:
+                        self.segments.add(tajet_segment)
+                        print("ajout du segment : ")
+
+                    except Exception as e:
+                        print("Erreur lors de l'ajout du segment : ")
+
+@receiver(post_save, sender=Trajet)
+def post_save_trajet(sender, instance, created, **kwargs):
+    instance.create_segments()
+
+# @receiver(m2m_changed, sender=Trajet.segments.through)
+# def m2m_changed_trajet(sender, instance, action, reverse, model, pk_set, **kwargs):
+#     if action == "post_add" or action == "post_clear":
+#         instance.create_segments()
 
 class Arret(models.Model):
     ville = models.OneToOneField(Ville, on_delete=models.CASCADE)
@@ -274,22 +320,39 @@ def update_other_segments(sender, instance, action, reverse, model, pk_set, **kw
 
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
-    #segmentss = Segment.objects.filter(trajet=1)
+#     #segmentss = Segment.objects.filter(trajet=1)
     if action == "post_add" or action == "post_clear" :
         
         
-        with transaction.atomic():
-            tajet_segment, created = Segment.objects.get_or_create(
-                depart=instance.adress_depart, 
-                arrivee=instance.adress_arrivee, 
-                prix=instance.prix
-            )
-            try:
-                instance.segments.add(tajet_segment)
-                print("ajout du segment : ")
+#         with transaction.atomic():
+        
+#             arrets = Arret.objects.filter(id=instance.arrets.id)
+#             if (instance.adress_depart - instance.adress_arrivee) > 0:
+#                 arrets_ordonnee=arrets.order_by('-ordre')
+#             else:
+#                 arrets_ordonnee=arrets.order_by('ordre')
+#             liste=[instance.adress_depart]
+#             for arret in arrets_ordonnee:
+#                 liste=liste.append(arret)
+#             liste.append(instance.adress_arrivee)
+#             for depart_list, arrivee_list in combinations(liste, 2):
+#                 prix_segment=Prix_segment.objects.filter(
+#                     (Q(depart=depart_list, arrivee=arrivee_list) | Q(depart=arrivee_list, arrivee=depart_list))
+#                 )
 
-            except Exception as e:
-                print("Erreur lors de l'ajout du segment : ")
+#                 tajet_segment, created = Segment.objects.get_or_create(
+#                 depart=depart_list, 
+#                 arrivee=arrivee_list, 
+#                 prix=prix_segment.prix
+#                 )
+#                 try:
+#                     instance.segments.add(tajet_segment)
+#                     print("ajout du segment : ")
+
+#                 except Exception as e:
+#                     print("Erreur lors de l'ajout du segment : ")
+
+
 
 
         for segment_id in pk_set:
@@ -473,5 +536,12 @@ class Reservation(models.Model):
             # Génère un numéro de réservation unique basé sur l'ID du trajet et un UUID
             self.numero_reservation = f"{self.trajet.id}-{uuid.uuid4().hex[:6].upper()}"
         super().save(*args, **kwargs)
+
+
+class Prix_segment(models.Model):
+    depart=models.CharField(choices=get_ville_choices, max_length=50)
+    arrivee=models.CharField(choices=get_ville_choices,  max_length=50)  
+    prix= models.DecimalField(max_digits=10, decimal_places=2)
+
 
     

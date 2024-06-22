@@ -49,7 +49,7 @@ def rechercher_trajet(request):
             for trajet in trajets:
                 #for horaire in trajet.horaires.all():
                     #if horaire.heure_depart.date() == date_depart:
-                segments_filtres=trajet.segments.filter(depart=adresse_depart, arrivee=adresse_arrivee , )
+                segments_filtres=trajet.segments.filter(depart=adresse_depart, arrivee=adresse_arrivee )
 
                 for segment in segments_filtres:
                     trajet_segments = TrajetSegment.objects.filter(segment_id=segment.id , trajet_id = trajet.id , place_disponible__gte=nombre_place)

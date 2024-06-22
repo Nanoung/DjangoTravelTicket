@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from reservations.models import Arret, Avantage, CarType, Cars, Client, Horaire, Reservation, Segment, SegmentHoraire, Trajet, Ville
+from reservations.models import Arret, Avantage, CarType, Cars, Client, Horaire, Prix_segment, Reservation, Segment, SegmentHoraire, Trajet, Ville
 
 class TrajetAdmin(admin.ModelAdmin):
     list_display = ( 'id','adress_depart','adress_arrivee')
@@ -35,7 +35,11 @@ class SegmentHoraireAdmin(admin.ModelAdmin):
     list_display =('id','heure_depart','heure_arrivee') 
 class VilleAdmin(admin.ModelAdmin):
     list_display =('id','nom','ordre')
-    
+
+
+class Prix_segmentAdmin(admin.ModelAdmin):
+    list_display =('id','depart','arrivee','prix')
+
 class ArretAdmin(admin.ModelAdmin):
     list_display =('id','ville')
 
@@ -56,6 +60,8 @@ admin.site.register(Client,ClientAdmin)
 admin.site.register(SegmentHoraire,SegmentHoraireAdmin)
 admin.site.register(Arret,ArretAdmin)
 admin.site.register(Ville,VilleAdmin)
+admin.site.register(Prix_segment,Prix_segmentAdmin)
+
 
 
 
