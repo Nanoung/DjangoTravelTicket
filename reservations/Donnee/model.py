@@ -384,3 +384,102 @@ class Reservation(models.Model):
         super().save(*args, **kwargs)
 
     
+ .......
+@receiver(m2m_changed, sender=Trajet.segments.through)
+def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
+#     #segmentss = Segment.objects.filter(trajet=1)
+    if action == "post_add" or action == "post_clear" :
+        
+        
+#         with transaction.atomic():
+        
+#             arrets = Arret.objects.filter(id=instance.arrets.id)
+#             if (instance.adress_depart - instance.adress_arrivee) > 0:
+#                 arrets_ordonnee=arrets.order_by('-ordre')
+#             else:
+#                 arrets_ordonnee=arrets.order_by('ordre')
+#             liste=[instance.adress_depart]
+#             for arret in arrets_ordonnee:
+#                 liste=liste.append(arret)
+#             liste.append(instance.adress_arrivee)
+#             for depart_list, arrivee_list in combinations(liste, 2):
+#                 prix_segment=Prix_segment.objects.filter(
+#                     (Q(depart=depart_list, arrivee=arrivee_list) | Q(depart=arrivee_list, arrivee=depart_list))
+#                 )
+
+#                 tajet_segment, created = Segment.objects.get_or_create(
+#                 depart=depart_list, 
+#                 arrivee=arrivee_list, 
+#                 prix=prix_segment.prix
+#                 )
+#                 try:
+#                     instance.segments.add(tajet_segment)
+#                     print("ajout du segment : ")
+
+#                 except Exception as e:
+#                     print("Erreur lors de l'ajout du segment : ")
+
+
+
+            for segment_id in pk_set:
+                segment = Segment.objects.get(pk=segment_id)
+                if segment.depart == instance.adress_depart:
+
+                    for horaire in instance.horaires.all():
+
+                        dummy_date = datetime.combine(datetime.today(), horaire.heure_depart)
+                        #print("je suis dans if")
+
+                        segment.horairesegment.create(heure_depart=dummy_date)
+                else:
+                        #pre_segments = Segment.objects.get(pk=segment_id)
+
+                    for segment_id in pk_set:
+                        # print("debut presegement")
+                        pre_segment = Segment.objects.get(pk=segment_id)
+
+                        for horairesegment in pre_segment.horairesegment.all():
+                            dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
+
+                            if  segment.depart == pre_segment.arrivee  and dummy_dat:
+
+                                    #horairesegss = segment.horairesegment.all()
+                                segment.horairesegment.create(heure_depart=dummy_dat)
+                segment.save()
+                
+
+@receiver(m2m_changed, sender=Trajet.segments.through)
+def update_segment_prix(sender, instance, action, **kwargs):
+    if action == "post_add":
+        nombre_place=instance.car.nombre_places
+        car_type = instance.car.type
+        for segment in instance.segments.all():
+            trajet_segment, created = TrajetSegment.objects.get_or_create(trajet_id = instance, segment_id = segment )
+            trajet_segment.place_disponible=nombre_place
+            if car_type.nom == 'Premium':
+                trajet_segment.prix_segment = segment.prix * Decimal('1.375') 
+            else:
+                trajet_segment.prix_segment = segment.prix 
+            trajet_segment.save()
+
+
+    
+
+@receiver(m2m_changed, sender=Segment.horairesegment.through)
+def update_heure_arrivee(sender, instance, action, **kwargs):
+        if action == "post_add" or action == "post_clear":
+            for horaire in instance.horairesegment.all():
+                if not horaire.heure_arrivee:
+# Convertir heure_depart en datetime
+                    dummy_date = datetime.combine(datetime.today(), horaire.heure_depart)
+                    # Ajouter la durée
+                    new_datetime = dummy_date + timedelta(minutes=instance.duree)
+                    # Convertir datetime en time
+                    heure_arrivee = new_datetime.time()                    
+                    horaire.heure_arrivee = heure_arrivee
+                    horaire.save()
+
+
+class SegmentHoraire(models.Model):
+    heure_depart = models.TimeField()
+    heure_arrivee = models.TimeField(null=True , blank=True)
