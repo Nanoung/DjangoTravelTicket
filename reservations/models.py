@@ -58,11 +58,24 @@ class Reservation(models.Model):
 
 
 """
-class Ville(models.TextChoices):
-        Korhogo = 'Korhogo'
-        Bouaké = 'Bouaké'
-        Yamoussoukro = 'Yamoussoukro'
-        Abidjan = 'Abidjan'
+# class Ville(models.TextChoices):
+#         Korhogo = 'Korhogo'
+#         Bouaké = 'Bouaké'
+#         Yamoussoukro = 'Yamoussoukro'
+#         Abidjan = 'Abidjan'
+class Ville(models.Model):
+        nom=models.CharField(max_length=100)
+        ordre=models.IntegerField(editable=False, unique=True)
+        def __str__(self):
+            return f"{self.nom}"
+
+@receiver(pre_save, sender=Ville)
+def set_ville_ordre(sender, instance, **kwargs):
+    if not instance.pk:
+        max_ordre = Ville.objects.all().aggregate(models.Max('ordre'))['ordre__max']
+        instance.ordre = 1 if max_ordre is None else max_ordre + 1
+        
+        
 
 class Avantage(models.Model):
     nom = models.CharField(max_length=100)
@@ -94,6 +107,9 @@ class Cars(models.Model):
 # Cela permet d'accéder à toutes les voitures d'un type de voiture spécifique en utilisant car_type.cars.all()
     def __str__(self):
         return f" {self.immatriculation} -{self.type} "
+def get_ville_choices():
+        villes = Ville.objects.all().order_by('ordre')
+        return [(ville.nom, ville.nom) for ville in villes]
     
 class Trajet(models.Model):
 
@@ -104,6 +120,7 @@ class Trajet(models.Model):
     
     date_str = '2024-01-01'
 
+
 # Convertir la chaîne de caractères en objet datetime
     #date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
 
@@ -112,8 +129,8 @@ class Trajet(models.Model):
 
     prix = models.DecimalField(max_digits=10, decimal_places=2 , null= True)
     date_depart= models.DateField(default=timezone.now)
-    adress_depart=models.CharField(choices=Ville.choices, max_length=50)
-    adress_arrivee=models.CharField(choices=Ville.choices, max_length=50)
+    adress_depart=models.CharField(choices=get_ville_choices, max_length=50)
+    adress_arrivee=models.CharField(choices=get_ville_choices,  max_length=50)
     arrets = models.ManyToManyField('Arret', related_name='Trajet' )
 
     nom_voyage=models.CharField(max_length=100 , blank=True)
@@ -129,10 +146,10 @@ class Trajet(models.Model):
         super(Trajet, self).save(*args, **kwargs)
 
 class Arret(models.Model):
-    nom=models.CharField(choices=Ville.choices, max_length=50)
+    ville = models.OneToOneField(Ville, on_delete=models.CASCADE)
     def __str__(self):
        
-        return f"{self.nom}"
+        return f"{self.ville.nom}"
 
 """
 @receiver(post_save, sender=Trajet)
@@ -159,8 +176,8 @@ class Horaire(models.Model):
 
 
 class Segment(models.Model):
-    depart = models.CharField(choices=Ville.choices, max_length=50)
-    arrivee = models.CharField(choices=Ville.choices, max_length=50)
+    depart = models.CharField(max_length=50)
+    arrivee = models.CharField(max_length=50)
     #ordre = models.IntegerField(blank=True)
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     duree = models.IntegerField(help_text="Durée en minutes", default=480)

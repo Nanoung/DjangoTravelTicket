@@ -4,7 +4,7 @@
 from datetime import date
 from django import forms
 
-from reservations.models import Client, Horaire, Trajet
+from reservations.models import Client, Horaire, Trajet, Ville
 
 """
 class TrajetForm(forms.ModelForm):
@@ -23,18 +23,15 @@ class TrajetForm(forms.ModelForm):
         }
 """
 
-
+def get_ville_choices():
+        villes = Ville.objects.all().order_by('ordre')
+        return [(ville.nom, ville.nom) for ville in villes]
+    
 class TrajetHoraireForm(forms.Form):
 
-    Ville = [
-    ('Korhogo', 'Korhogo'),
-    ('Bouaké', 'Bouaké'),
-    ('Yamoussoukro', 'Yamoussoukro'),
-    ('Abidjan', 'Abidjan'),
-]
 
-    adress_depart = forms.ChoiceField(choices=Ville)
-    adress_arrivee = forms.ChoiceField(choices=Ville)
+    adress_depart = forms.ChoiceField(choices=get_ville_choices)
+    adress_arrivee = forms.ChoiceField(choices=get_ville_choices)
     date_depart = forms.DateField(widget=forms.DateInput(attrs={
         'type': 'date',
         'min': date.today().isoformat(),
@@ -46,3 +43,5 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ['nom', 'prenoms', 'email', 'telephone']
+
+    

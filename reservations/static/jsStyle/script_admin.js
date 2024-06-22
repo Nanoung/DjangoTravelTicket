@@ -97,8 +97,10 @@ jQuery(document).ready(function($) {
     function updateOptions() {
         var selectedDepart = $('#id_adress_depart').val();
         var selectedArrivee = $('#id_adress_arrivee').val();
-        console.log(selectedDepart);
-        console.log(selectedArrivee);
+        var selectedDepartPosition = $('#id_adress_depart option:selected').index();
+        var selectedArriveePosition = $('#id_adress_arrivee option:selected').index();
+        console.log(selectedDepartPosition);
+        console.log(selectedArriveePosition);
 
         // Show all options in both selects initially
         $('#id_adress_depart option, #id_adress_arrivee option, #id_arrets option').show();
@@ -121,18 +123,42 @@ jQuery(document).ready(function($) {
             });
             
         }
-        if (selectedDepart && selectedArrivee) {
-            console.log(selectedDepart ,selectedArrivee )
+        // var departOrder = $('#id_adress_depart option:selected').data('ordre');
+        // var arriveeOrder = $('#id_adress_arrivee option:selected').data('ordre');
+
+        if (Math.abs(selectedDepartPosition - selectedArriveePosition) == 1) {
             $('#id_arrets option').each(function() {
-                console.log("arrets activer")
-                console.log($(this).text())
-
-
-                if (($(this).text() === selectedDepart) || ($(this).text() === selectedArrivee)) {
+               
+                    $(this).hide();
+                
+            });
+        };
+        if (Math.abs(selectedDepartPosition - selectedArriveePosition) > 1) {
+            var maxPosition = Math.max(selectedDepartPosition, selectedArriveePosition);
+            var minPosition = Math.min(selectedDepartPosition, selectedArriveePosition);
+            $('#id_arrets option').each(function() {
+                if (($(this).val() >= maxPosition) || ($(this).val() <= minPosition)) {
                     $(this).hide();
                 }
+               
             });
-        }
+        };
+
+        
+
+        // if (selectedDepart && selectedArrivee) {
+        //     console.log(selectedDepart ,selectedArrivee )
+        //     $('#id_arrets option').each(function() {
+        //         console.log("arrets activer")
+        //         console.log($(this).val())
+
+
+
+        //         if (($(this).text() === selectedDepart) || ($(this).text() === selectedArrivee)) {
+        //             $(this).hide();
+        //         }
+        //     });
+        // }
 
     }
 
