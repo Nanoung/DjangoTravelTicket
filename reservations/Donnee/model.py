@@ -483,3 +483,55 @@ def update_heure_arrivee(sender, instance, action, **kwargs):
 class SegmentHoraire(models.Model):
     heure_depart = models.TimeField()
     heure_arrivee = models.TimeField(null=True , blank=True)
+@receiver(m2m_changed, sender=Trajet.segments.through)
+def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
+    #segmentss = Segment.objects.filter(trajet=1)
+    if action == "post_add" or action == "post_clear" :
+
+
+    
+    def create_segments(self):  
+            # self.segments.clear()      
+            arrets = self.arrets.all()
+            print(arrets)
+            Ville_depart = Ville.objects.get(nom=self.adress_depart)
+            Ville_arrivee = Ville.objects.get(nom=self.adress_arrivee)
+
+            depart_ordre = Ville_depart.ordre
+            arrivee_ordre = Ville_arrivee.ordre
+
+            if (depart_ordre - arrivee_ordre) > 0:
+                    arrets_ordonnee=arrets.order_by('-ville__ordre')
+            else:
+                    arrets_ordonnee=arrets.order_by('ville__ordre')
+            liste=[self.adress_depart]
+            for arret in arrets_ordonnee:
+                    liste.append(arret)
+            liste.append(self.adress_arrivee)
+            print(liste)
+            for depart_list, arrivee_list in combinations(liste, 2):
+                    prix_segment=Prix_segment.objects.get(
+                        (Q(depart=depart_list, arrivee=arrivee_list) | Q(depart=arrivee_list, arrivee=depart_list))
+                    )
+
+                    trajet_segment= Segment.objects.create(
+                    depart=depart_list, 
+                    arrivee=arrivee_list, 
+                    prix=prix_segment.prix
+                    )
+                    try:
+                        self.segments.add(trajet_segment)
+                        print("ajout du segment : ")
+
+                    except Exception as e:
+                        print("Erreur lors de l'ajout du segment : ")
+                    
+
+# @receiver(m2m_changed, sender=Trajet.segments.through)
+# def m2m_changed_trajet(sender, instance, action, reverse, model, pk_set, **kwargs):
+#     if action == "post_add" or action == "post_clear":
+#         instance.create_segments()
+
+@receiver(post_save, sender=Trajet)
+def post_save_trajet(sender, instance, created, **kwargs):
+    instance.create_segments()

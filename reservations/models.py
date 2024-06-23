@@ -90,7 +90,7 @@ class Trajet(models.Model):
     date_depart= models.DateField(default=timezone.now)
     adress_depart=models.CharField(choices=get_ville_choices, max_length=50)
     adress_arrivee=models.CharField(choices=get_ville_choices,  max_length=50)
-    arrets = models.ManyToManyField('Arret', related_name='Trajet' )
+    arrets = models.ManyToManyField('Arret', related_name='Trajet',blank=True )
 
     nom_voyage=models.CharField(max_length=100 , blank=True)
     horaires = models.ManyToManyField('Horaire',related_name='Trajet')
@@ -98,59 +98,73 @@ class Trajet(models.Model):
     car = models.ForeignKey(Cars, on_delete=models.CASCADE, related_name='Trajet' , null=True)  # Relation one-to-many
 
 
-
     def save(self, *args, **kwargs):
         if self.adress_depart and self.adress_arrivee:
             self.nom_voyage = f"{self.adress_depart}_{self.adress_arrivee}"
         super(Trajet, self).save(*args, **kwargs)
+        
 
-    def create_segments(self):  
+    def create_segments(self):
+            @receiver(m2m_changed, sender=Trajet.arrets.through)
+            def arrets_changed(sender, instance, action, **kwargs):
+                if action == 'post_add':
+                    # Votre logique ici une fois que les arrêts ont été associés au trajet
+                    arrets = instance.arrets.all()
+        # Utilisez les arrêts associés au trajet  
             # self.segments.clear()      
-            arrets = self.arrets.all()
-            Ville_depart = Ville.objects.get(nom=self.adress_depart)
-            Ville_arrivee = Ville.objects.get(nom=self.adress_arrivee)
+                    # arrets = self.arrets.all() 
+                    print("arrets",arrets)
+                    Ville_depart = Ville.objects.get(nom=self.adress_depart)
+                    Ville_arrivee = Ville.objects.get(nom=self.adress_arrivee)
 
-            depart_ordre = Ville_depart.ordre
-            arrivee_ordre = Ville_arrivee.ordre
+                    depart_ordre = Ville_depart.ordre
+                    arrivee_ordre = Ville_arrivee.ordre
 
-            if (depart_ordre - arrivee_ordre) > 0:
-                    arrets_ordonnee=arrets.order_by('-ville__ordre')
-            else:
-                    arrets_ordonnee=arrets.order_by('ville__ordre')
-            liste=[self.adress_depart]
-            for arret in arrets_ordonnee:
-                    liste.append(arret)
-            liste.append(self.adress_arrivee)
-            for depart_list, arrivee_list in combinations(liste, 2):
-                    prix_segment=Prix_segment.objects.get(
-                        (Q(depart=depart_list, arrivee=arrivee_list) | Q(depart=arrivee_list, arrivee=depart_list))
-                    )
+                    if (depart_ordre - arrivee_ordre) > 0:
+                            arrets_ordonnee=arrets.order_by('-ville__ordre')
+                    else:
+                            arrets_ordonnee=arrets.order_by('ville__ordre')
+                    liste=[self.adress_depart]
+                    for arret in arrets_ordonnee:
+                            liste.append(arret)
+                    liste.append(self.adress_arrivee)
+                    print(liste)
+                    for depart_list, arrivee_list in combinations(liste, 2):
+                            prix_segment=Prix_segment.objects.get(
+                                (Q(depart=depart_list, arrivee=arrivee_list) | Q(depart=arrivee_list, arrivee=depart_list))
+                            )
 
-                    tajet_segment, created = Segment.objects.get_or_create(
-                    depart=depart_list, 
-                    arrivee=arrivee_list, 
-                    prix=prix_segment.prix
-                    )
-                    try:
-                        self.segments.add(tajet_segment)
-                        print("ajout du segment : ")
+                            trajet_segment= Segment.objects.create(
+                            depart=depart_list, 
+                            arrivee=arrivee_list, 
+                            prix=prix_segment.prix
+                            )
+                            try:
+                                self.segments.add(trajet_segment)
+                                print("ajout du segment : ")
 
-                    except Exception as e:
-                        print("Erreur lors de l'ajout du segment : ")
-
-@receiver(post_save, sender=Trajet)
-def post_save_trajet(sender, instance, created, **kwargs):
-    instance.create_segments()
-
+                            except Exception as e:
+                                print("Erreur lors de l'ajout du segment : ")
+                    
 # @receiver(m2m_changed, sender=Trajet.segments.through)
 # def m2m_changed_trajet(sender, instance, action, reverse, model, pk_set, **kwargs):
 #     if action == "post_add" or action == "post_clear":
 #         instance.create_segments()
 
+# @receiver(m2m_changed, sender=Trajet.arrets.through)
+# def m2m_changed_arrets(sender, instance, action, reverse, model, pk_set, **kwargs):
+#     if action == "post_add":
+#         instance.create_segments()
+
+
+
+@receiver(post_save, sender=Trajet)
+def post_save_trajet(sender, instance, created, **kwargs):
+        instance.create_segments()
+
 class Arret(models.Model):
     ville = models.OneToOneField(Ville, on_delete=models.CASCADE)
     def __str__(self):
-       
         return f"{self.ville.nom}"
 
 
@@ -200,36 +214,51 @@ def save(self, *args, **kwargs):
 
 
 
-@receiver(m2m_changed, sender=Trajet.segments.through)
+@receiver(m2m_changed, sender=Trajet.segments.through , dispatch_uid="segment_instance")
 def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
 #     #segmentss = Segment.objects.filter(trajet=1)
-    if action == "post_add" or action == "post_clear" :
-        
-        for segment_id in pk_set:
-                segment = Segment.objects.get(pk=segment_id)
-                if segment.depart == instance.adress_depart:
+    # if action == "post_add" or action == "post_clear" :
+         
 
-                    for horaire in instance.horaires.all():
+    @receiver(m2m_changed, sender=Trajet.horaires.through, dispatch_uid="horaire_signal")
+    def arrets_changed(sender, instance, action, **kwargs):
+            if action == "post_add" or action == "post_clear" :
+                print("pk_set:",pk_set)
+                # print("instance_segement",instance.segments.all())
+                for segment in instance.segments.all():
+                        # segment = Segment.objects.get(pk=segment_id)
+                        print("segments:",segment)
+                        if segment.depart == instance.adress_depart:
+                            print("horaires:",instance.horaires.all())
+                            for horaire in instance.horaires.all():
 
-                        dummy_date = datetime.combine(datetime.today(), horaire.heure_depart)
-                        #print("je suis dans if")
+                                dummy_date = datetime.combine(datetime.today(), horaire.heure_depart)
+                                print("je suis dans if")
 
-                        segment.horairesegment.create(heure_depart=dummy_date)
-                else:
-                        #pre_segments = Segment.objects.get(pk=segment_id)
+                                segment.horairesegment.create(heure_depart=dummy_date)
+                            segment.save()
+                        else:
+                                #pre_segments = Segment.objects.get(pk=segment_id)
+                            # print("debut elsepreg")
 
-                    for segment_id in pk_set:
-                        # print("debut presegement")
-                        pre_segment = Segment.objects.get(pk=segment_id)
+                            for id_segment in pk_set:
+                                print("debut presegement")
+                                pre_segment = Segment.objects.get(pk=id_segment)
 
-                        for horairesegment in pre_segment.horairesegment.all():
-                            dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
+                                if pre_segment.horairesegment:
+                                    print('preseg:',pre_segment)
+                                    print(pre_segment.horairesegment.all())
+                                    for horairesegment in pre_segment.horairesegment.all():
+                                        print("debut Horaire")
 
-                            if  segment.depart == pre_segment.arrivee  and dummy_dat:
+                                        dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
+                                        print('dummy_dat', dummy_dat)
 
-                                    #horairesegss = segment.horairesegment.all()
-                                segment.horairesegment.create(heure_depart=dummy_dat)
-                segment.save()
+                                        if  segment.depart == pre_segment.arrivee  and dummy_dat:
+
+                                                #horairesegss = segment.horairesegment.all()
+                                            segment.horairesegment.create(heure_depart=dummy_dat)
+                        segment.save()
                 
 
 @receiver(m2m_changed, sender=Trajet.segments.through)
