@@ -1,6 +1,7 @@
 from datetime import *
 from decimal import Decimal
 from itertools import combinations
+import logging
 
 from django.utils import timezone
 #from datetime import date, datetime, timedelta, timezone
@@ -191,26 +192,53 @@ class Segment(models.Model):
         horaires = self.horairesegment.all()  # Récupère tous les SegmentHoraire associés
         horaires_str = ", ".join([str(horaire) for horaire in horaires])
         return f" {self.depart} -> {self.arrivee} | Horaires: {horaires_str}"
+    
+class SegmentHoraire(models.Model):
+    heure_depart = models.TimeField()
+    heure_arrivee = models.TimeField(null=True , blank=True)
+    def __str__(self):
+         return f"{self.heure_depart}"
 
 class TrajetSegment(models.Model):
     trajet_id = models.ForeignKey(Trajet, on_delete=models.CASCADE)
     segment_id = models.ForeignKey(Segment, on_delete=models.CASCADE)
     prix_segment = models.DecimalField(max_digits=10, decimal_places=2 ,default=0.0)
-    place_disponible=models.IntegerField(default=0)
+
+    # place_disponible=models.IntegerField(default=0)
 
 print("Bien ok")
+# table intermediaire entre Segment et SegmentHoraire afin de pouvoir gerer les place disponible pour 
+# chaque horaire de segment, car un segment ce differencie par leurs horaire 
+class SegmentSegmentHoraire(models.Model):
+    segment_id = models.ForeignKey(Segment, on_delete=models.CASCADE )
+    segmenthoraire_id = models.ForeignKey(SegmentHoraire, on_delete=models.CASCADE)
+    place_disponible = models.IntegerField(default=0)
+
 
 #Pöur modifier les champs  place_disponible pour les instance enregistrer avant 
-def save(self, *args, **kwargs):
-        # Récupérez le trajet associé
-        trajet = self.trajet_id
-        
-        # Assurez-vous que le trajet a une voiture associée
-        if trajet and trajet.car:
-            self.place_disponible = trajet.car.nombre_places
+    print("Commmence BIEN ")
+    def save(self, *args, **kwargs):
+            print(f"Saving HoraireSegment: segment_id={self.segment_id}, segmenthoraire_id={self.segmenthoraire_id}")
 
-        # Appel à la méthode save de la classe parente pour enregistrer les modifications
-        super(TrajetSegment, self).save(*args, **kwargs)
+            # Récupérez le trajet associé
+            # segment = self.segment_id
+            trajet_segments = TrajetSegment.objects.filter(segment_id=self.segment_id)
+            print("trajet_segment_HoraireSegment",trajet_segments)
+
+
+            # Assurez-vous que le trajet a une voiture associée
+            if trajet_segments.exists(): 
+                trajet = trajet_segments.first().trajet_id
+                if trajet.car: 
+                # segment_trajet=trajet
+
+                    self.place_disponible = trajet.car.nombre_places
+
+            else :
+                print("PLACECECD disponible non enregistrer trajet_segment vide ")
+
+            # Appel à la méthode save de la classe parente pour enregistrer les modifications
+            super(SegmentSegmentHoraire, self).save(*args, **kwargs)
 
 
 
@@ -279,24 +307,51 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
                                                         heure_dep = new_datetime.time()     
                                                         segment.horairesegment.create(heure_depart=heure_dep)
 
-                                            segment.save()
+                                                    segment.save()
 
                         segment.save()
                 
+logger = logging.getLogger(__name__)
 
 @receiver(m2m_changed, sender=Trajet.segments.through)
 def update_segment_prix(sender, instance, action, **kwargs):
     if action == "post_add":
-        nombre_place=instance.car.nombre_places
-        car_type = instance.car.type
-        for segment in instance.segments.all():
-            trajet_segment, created = TrajetSegment.objects.get_or_create(trajet_id = instance, segment_id = segment )
-            trajet_segment.place_disponible=nombre_place
-            if car_type.nom == 'Premium':
-                trajet_segment.prix_segment = segment.prix * Decimal('1.375') 
-            else:
-                trajet_segment.prix_segment = segment.prix 
-            trajet_segment.save()
+        try:
+            nombre_place=instance.car.nombre_places
+            car_type = instance.car.type
+            for segment in instance.segments.all():
+                trajet_segment, created = TrajetSegment.objects.get_or_create(trajet_id = instance, segment_id = segment )
+                # trajet_segment.place_disponible=nombre_place
+                if car_type.nom == 'Premium':
+                    trajet_segment.prix_segment = segment.prix * Decimal('1.375') 
+                else:
+                    trajet_segment.prix_segment = segment.prix 
+                trajet_segment.save()
+            logger.info(f"Successfully updated segments and horaires for trajet {instance.pk}")
+        except Exception as e:
+                    logger.error(f"Error updating segments and horaires for trajet {instance.pk}: {e}")
+                    raise
+@receiver(m2m_changed, sender=Trajet.segments.through , dispatch_uid="trajet_instance")
+def trajet(sender, instance, action,reverse, model, pk_set, **kwargs):
+    nombre_place=instance.car.nombre_places
+    # car_type = instance.car.type
+
+    @receiver(m2m_changed, sender=Segment.horairesegment.through)
+    def update_segment_place(sender, instance, action, **kwargs):
+            if action == "post_add":
+                
+                try:
+                    horaires = instance.horairesegment.all()
+                    print("HHHORAIREEEE",horaires)
+                    for horaire in horaires:
+                        horaire_segment, created = SegmentSegmentHoraire.objects.get_or_create( segment_id = instance , segmenthoraire_id = horaire )
+                        horaire_segment.place_disponible=nombre_place
+
+                        horaire_segment.save()
+                    logger.info(f"Successfully updated segments and horaires for trajet {instance.pk}")
+                except Exception as e:
+                    logger.error(f"Error updating segments and horaires for trajet {instance.pk}: {e}")
+                    raise
 
 
     
@@ -316,15 +371,15 @@ def update_heure_arrivee(sender, instance, action, **kwargs):
                     horaire.save()
 
 
-class SegmentHoraire(models.Model):
-    heure_depart = models.TimeField()
-    heure_arrivee = models.TimeField(null=True , blank=True)
+# class SegmentHoraire(models.Model):
+#     heure_depart = models.TimeField()
+#     heure_arrivee = models.TimeField(null=True , blank=True)
 
 
-    def __str__(self):
-        #horaires = self.horairesegment.all()  # Récupère tous les SegmentHoraire associés
-        #horaires_str = ", ".join([str(horaire) for horaire in horaires])
-        return f"{self.heure_depart}"
+#     def __str__(self):
+#         #horaires = self.horairesegment.all()  # Récupère tous les SegmentHoraire associés
+#         #horaires_str = ", ".join([str(horaire) for horaire in horaires])
+#         return f"{self.heure_depart}"
 
 # Attacher le signal pre_save pour exécuter calculer_heures avant la sauvegarde du segmentHoraire
 #models.signals.pre_save.connect(SegmentHoraire.calculer_heures, sender=SegmentHoraire)
