@@ -137,7 +137,8 @@ class Trajet(models.Model):
                             trajet_segment= Segment.objects.create(
                             depart=depart_list, 
                             arrivee=arrivee_list, 
-                            prix=prix_segment.prix
+                            prix=prix_segment.prix,
+                            duree=prix_segment.duree
                             )
                             try:
                                 self.segments.add(trajet_segment)
@@ -183,7 +184,7 @@ class Segment(models.Model):
     arrivee = models.CharField(max_length=50)
     #ordre = models.IntegerField(blank=True)
     prix = models.DecimalField(max_digits=10, decimal_places=2)
-    duree = models.IntegerField(help_text="Durée en minutes", default=480)
+    duree = models.IntegerField(help_text="Durée en minutes")
     horairesegment = models.ManyToManyField('SegmentHoraire',related_name='segments', blank=True)
 
     def __str__(self):
@@ -244,20 +245,42 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
                             for id_segment in pk_set:
                                 print("debut presegement")
                                 pre_segment = Segment.objects.get(pk=id_segment)
+                                # all_segments = list(instance.pre_segment.all())
 
                                 if pre_segment.horairesegment:
+                                    # index = all_segments.index(pre_segment)
+                                    # prev_segment = all_segments[index - 1]
+
                                     print('preseg:',pre_segment)
                                     print(pre_segment.horairesegment.all())
-                                    for horairesegment in pre_segment.horairesegment.all():
-                                        print("debut Horaire")
+                                    if  segment.depart == pre_segment.arrivee:
+                                        for horairesegment in pre_segment.horairesegment.all():
+                                            print("debut Horaire")
 
-                                        dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
-                                        print('dummy_dat', dummy_dat)
 
-                                        if  segment.depart == pre_segment.arrivee  and dummy_dat:
+                                            dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
+                                            print('dummy_dat', dummy_dat)
 
-                                                #horairesegss = segment.horairesegment.all()
+                                            # if  segment.depart == pre_segment.arrivee  and dummy_dat:
+                                                
+                                                    #horairesegss = segment.horairesegment.all()
                                             segment.horairesegment.create(heure_depart=dummy_dat)
+
+                                        segment.save()
+                                    else :
+                                            for id_segment in pk_set:
+                                                prev_segment = Segment.objects.get(pk=id_segment)
+                                                if prev_segment.horairesegment:
+                                                    for horairesegment in prev_segment.horairesegment.all():
+                                                        print("debutOKOKO")
+                                                        dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
+                                                        new_datetime = dummy_dat + timedelta(minutes=prev_segment.duree)
+                    # Convertir datetime en time
+                                                        heure_dep = new_datetime.time()     
+                                                        segment.horairesegment.create(heure_depart=heure_dep)
+
+                                            segment.save()
+
                         segment.save()
                 
 
@@ -335,6 +358,7 @@ class Prix_segment(models.Model):
     depart=models.CharField(choices=get_ville_choices, max_length=50)
     arrivee=models.CharField(choices=get_ville_choices,  max_length=50)  
     prix= models.DecimalField(max_digits=10, decimal_places=2)
+    duree = models.IntegerField(help_text="Durée en minutes", default=480)
 
 
     
