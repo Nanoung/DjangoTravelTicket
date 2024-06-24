@@ -5,7 +5,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from reservations.models import Avantage, Client, Horaire, Reservation, Segment, SegmentHoraire, Trajet, TrajetSegment
+from reservations.models import Avantage, Client, Horaire, Reservation, Segment, SegmentHoraire, SegmentSegmentHoraire, Trajet, TrajetSegment
 from .forms import ClientForm, TrajetHoraireForm
 
 
@@ -53,12 +53,16 @@ def rechercher_trajet(request):
                         print("segments_:", segments_disponibles)
 
                         horairesegments = segment.horairesegment.all()
+                        for  horairesegment in horairesegments:
+                            segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment )
+                            for  segmentsegmenthorairess in segmentsegmenthoraires:
+                                 segmentsegmenthoraire=segmentsegmenthorairess
                         # if horairesegments:
                         #     trajet_segments = TrajetSegment.objects.filter(segment_id=segment.id, trajet_id=trajet.id)
                         #     print("Segments trouvés:", trajet_segments)
 
                             # for trajet_segment in trajet_segments:
-                        segments_disponibles.append((trajet, segment, horairesegments,trajetsegment))
+                        segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire))
                     # else:
                     # print(f"Pas de horairesegments pour le segment {segment.id}")
 
