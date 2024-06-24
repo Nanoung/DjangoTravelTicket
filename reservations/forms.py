@@ -26,12 +26,16 @@ class TrajetForm(forms.ModelForm):
 def get_ville_choices():
         villes = Ville.objects.all().order_by('ordre')
         return [(ville.nom, ville.nom) for ville in villes]
+
+def get_default_ville():
+    ville = Ville.objects.all().order_by('ordre').last()
+    return ville.nom if ville else None
     
 class TrajetHoraireForm(forms.Form):
 
 
     adress_depart = forms.ChoiceField(choices=get_ville_choices)
-    adress_arrivee = forms.ChoiceField(choices=get_ville_choices)
+    adress_arrivee = forms.ChoiceField(choices=get_ville_choices, initial=get_default_ville )
     date_depart = forms.DateField(widget=forms.DateInput(attrs={
         'type': 'date',
         'min': date.today().isoformat(),

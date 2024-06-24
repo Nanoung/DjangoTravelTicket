@@ -1,5 +1,4 @@
-jQuery.noConflict();
-jQuery(document).ready(function($) {
+$(document).ready(function() {
     function updateOptions() {
         var selectedDepart = $('#id_adress_depart').val();
         var selectedArrivee = $('#id_adress_arrivee').val();

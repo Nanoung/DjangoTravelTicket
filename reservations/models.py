@@ -131,10 +131,11 @@ class Trajet(models.Model):
                     liste.append(self.adress_arrivee)
                     print(liste)
                     for depart_list, arrivee_list in combinations(liste, 2):
+                            
                             prix_segment=Prix_segment.objects.get(
                                 (Q(depart=depart_list, arrivee=arrivee_list) | Q(depart=arrivee_list, arrivee=depart_list))
                             )
-
+                            print("prix_segment",prix_segment)
                             trajet_segment= Segment.objects.create(
                             depart=depart_list, 
                             arrivee=arrivee_list, 
