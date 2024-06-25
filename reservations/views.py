@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 import json
 from django.core import serializers
 
@@ -32,6 +32,7 @@ def rechercher_trajet(request):
             date_depart = form.cleaned_data['date_depart']
 
             segments_disponibles = []
+            
 
             # Recherche de l'horaire avec la date de départ spécifiée
             trajets = Trajet.objects.filter(date_depart=date_depart)
@@ -48,21 +49,49 @@ def rechercher_trajet(request):
                     segments_seg= Segment.objects.filter(id=id_segment)
                     print("segments_seg:", segments_seg)
                     segments_disponible=segments_seg.filter(depart=adresse_depart , arrivee= adresse_arrivee)
+                    print("segmentOOKOK_disponible:", segments_disponible)
 
                     for segment in segments_disponible:
                         print("segments_:", segments_disponibles)
+                        now = datetime.now()
+                        act_date = now.date()
+                        time_actuel_20 = now - timedelta(minutes=20)
+                        if date_depart==act_date:
+                            horairesegments = segment.horairesegment.filter(heure_depart__gte=time_actuel_20)
 
-                        horairesegments = segment.horairesegment.all()
+                            #     segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment,  segmenthoraire_id__heure_depart__gte = time_actuel_20 )
+                            #     print("segmentOOKOK_HORAIRE_SEGMENTDAte:", segmentsegmenthoraires)
+                        else:
+
+                            horairesegments = segment.horairesegment.all()
+                            # print("segmentOOKOK_HORAIRE:", horairesegments)
+
+
                         for  horairesegment in horairesegments:
+                            # now = datetime.now()
+                            # act_date = now.date()
+                            # time_actuel_20 = now - timedelta(minutes=20)
+                            # heure_segment = horairesegment.heure_depart
+                            # segmenthoraire_time = datetime.strptime(heure_segment, "%H:%M:%S").time()
+
+                            # if date_depart==act_date:
+                            #     segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment,  segmenthoraire_id__heure_depart__gte = time_actuel_20 )
+                            #     print("segmentOOKOK_HORAIRE_SEGMENTDAte:", segmentsegmenthoraires)
+                            # else:
                             segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment )
+                            #     print("segmentOOKOK_HORAIRE_SEGMENT:", segmentsegmenthoraires)
+                            # print("HORAIRFINAL",segmentsegmenthoraires)
+
                             for  segmentsegmenthorairess in segmentsegmenthoraires:
-                                 segmentsegmenthoraire=segmentsegmenthorairess
+                                print("SECSECSESmnt", segmentsegmenthorairess.segmenthoraire_id)
+
+                                segmentsegmenthoraire=segmentsegmenthorairess
                         # if horairesegments:
                         #     trajet_segments = TrajetSegment.objects.filter(segment_id=segment.id, trajet_id=trajet.id)
                         #     print("Segments trouvés:", trajet_segments)
 
                             # for trajet_segment in trajet_segments:
-                        segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire))
+                        segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
                     # else:
                     # print(f"Pas de horairesegments pour le segment {segment.id}")
 

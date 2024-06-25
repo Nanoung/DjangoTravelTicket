@@ -535,3 +535,14 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
 @receiver(post_save, sender=Trajet)
 def post_save_trajet(sender, instance, created, **kwargs):
     instance.create_segments()
+
+
+if date_depart==act_date:
+                                segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment , segmenthoraire_id__gte = time_actuel_20 )
+                            else:
+                                segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment )
+
+
+now = datetime.now()
+            act_date = now.date()
+            time_actuel_20 = now - timedelta(minutes=20)
