@@ -30,6 +30,7 @@ def rechercher_trajet(request):
             adresse_depart = form.cleaned_data['adress_depart']
             adresse_arrivee = form.cleaned_data['adress_arrivee']
             date_depart = form.cleaned_data['date_depart']
+            nombre_place=form.cleaned_data['Nombre_place']
 
             segments_disponibles = []
             
@@ -65,7 +66,7 @@ def rechercher_trajet(request):
 
                         for  horairesegment in horairesegments:
                             
-                            segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment )
+                            segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment , place_disponible__gte = nombre_place)
                            
                             # print("HORAIRFINAL",segmentsegmenthoraires)
 
@@ -74,7 +75,18 @@ def rechercher_trajet(request):
 
                                 segmentsegmenthoraire=segmentsegmenthorairess
                     
-                            segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
+                        segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
+                    if segments_disponibles :
+                        request.session['key_nombre_place'] = nombre_place
+                        nombre_plac = request.session.get('key_nombre_place')
+
+                        print(f"Nombre de places défini dans la session: {nombre_place}")
+                        print(f"Nombre de places défini apres dans la session: {nombre_plac}")
+
+
+
+
+
         
             print("Segments disponibles:", segments_disponibles)
             return render(request, 'reservations/TrajetsDisponible.html', {'segments_disponibles': segments_disponibles, 'form': form})
@@ -127,9 +139,12 @@ def details_trajet(request, id_trajet , id_segment , id_horaire):
         
 def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthoraire):
     if request.method == 'POST':
+                
                 # Créer une instance de formulaire et la remplir avec les données de la requête
                 form = ClientForm(request.POST)
                 if form.is_valid():
+                    informations=[]
+
                 # Enregistrer le client dans la base de données
                     prenoms = form.cleaned_data['prenoms']
                     email = form.cleaned_data['email']
@@ -154,8 +169,38 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
                     # Vous pouvez générer un numéro de réservation unique ici
                     )
                     reservation.save()
-                    print("reservationsuccees")
-                    return redirect('ticket', id_trajet=id_trajet, id_segment=id_segment, id_segmentsegmenthoraire=id_segmentsegmenthoraire)
+                    nombre_place = request.session.get('key_nombre_place')
+                    print("Nombre de place" , nombre_place)
+                    trajetsegments = TrajetSegment.objects.get(trajet_id=id_trajet, segment_id=id_segment)
+                    horaire = SegmentSegmentHoraire.objects.get(id=id_segmentsegmenthoraire)
+                    segment = Segment.objects.get(id=id_segment)
+
+                    trajet = Trajet.objects.get(id=id_trajet)
+                    reservation = Reservation.objects.get(id=reservation.id)
+
+                    immatriculation = trajet.car.immatriculation
+                    depart=segment.depart
+                    arrivee = segment.arrivee
+                    type_car=trajet.car.type
+                    place_reserve=reservation.nombre_de_place
+
+
+
+
+
+
+                    informations.append((trajet ,segment, trajetsegments,  nombre_place, horaire,client_instance,immatriculation , type_car , depart , arrivee , reservation))
+                    if informations:
+                        print("reservationsuccees" ,informations)
+
+                        # print("reservationsuccees")
+                        return render(request, 'reservations/TravelTicket.html', {'informations': informations})
+                    else:
+                        return render(request, 'reservations/ReservationTicket.html', {'form': form})
+
+
+                    # return redirect('ticket', id_trajet=id_trajet, id_segment=id_segment, id_segmentsegmenthoraire=id_segmentsegmenthoraire)
+                    
                 else:
                     form = ClientForm()
     else:

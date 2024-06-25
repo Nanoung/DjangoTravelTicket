@@ -19,6 +19,30 @@
 </head>
 <body>
     <h1>Reservation effectuer avec success</h1>
+
+    {% for segment , trajet , trajetsegments , nombre_place , horaire , client_instance ,type_car ,immatriculation ,depart , arrivee , reservation  in  informations %}
+        <p> type voyage : {{ immatriculation }}</p> 
+        <p> Numero voyage : {{ trajet.id }}</p>
+        <p> Numero voyage : {{ type_car }}</p>
+
+        <p> Adress_depart : {{ depart }}</p>
+        <p>Adress_arrivee :  {{ arrivee }}</p>
+        <p> nombre place :  {{ nombre_place }}</p>
+        <p> horaire :  {{ horaire.segmenthoraire_id}}</p>
+
+        <p> nom :  {{ client_instance.nom}}</p>        
+        <p> prenoms :  {{ client_instance.prenoms}}</p>
+        <p> email :  {{ client_instance.email}}</p>
+        <p> telephone :  {{ client_instance.telephone}}</p>
+
+
+        <p> numero_reservation :  {{ reservation.numero_reservation}}</p>
+
+
+        <p>Adress_arrivee :  {{ trajetsegments.prix_segment }} FCFA</p>
+
+
+    {% endfor %}
      
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
