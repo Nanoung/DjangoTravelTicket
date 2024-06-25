@@ -305,7 +305,10 @@ def update_horaire(sender, instance, action,reverse, model, pk_set, **kwargs):
                                                         dummy_dat = datetime.combine(datetime.today(), horairesegment.heure_arrivee)
                                                         new_datetime = dummy_dat + timedelta(minutes=prev_segment.duree)
                     # Convertir datetime en time
-                                                        heure_dep = new_datetime.time()     
+                                                        heure_dep = new_datetime.time() 
+
+                                                        # horaire_segment, created = segment.horairesegment.get_or_create(heure_depart=heure_departt)
+    
                                                         segment.horairesegment.create(heure_depart=heure_dep)
 
                                                     segment.save()
@@ -395,9 +398,8 @@ class Client(models.Model):
 
 
 class Reservation(models.Model):
-      # Relation avec le modèle Trajet
-    trajet_id = models.ForeignKey('Trajet', on_delete=models.CASCADE, related_name='reservations' , null=True)     
-    segment_id = models.ForeignKey('Segment',  on_delete=models.CASCADE, related_name='reservations' , null=True)
+      
+    segmenthoraire_id = models.ForeignKey(SegmentSegmentHoraire,  on_delete=models.CASCADE, related_name='reservations' , null=True)
     client_id = models.ForeignKey(Client, on_delete=models.PROTECT)
     numero_reservation = models.CharField(max_length=100, editable=False, unique=True , null=True , blank=True)  # Numéro de réservation unique
     nombre_de_place = models.IntegerField(default=1)  # Nombre de places réservées
@@ -406,7 +408,7 @@ class Reservation(models.Model):
     def save(self, *args, **kwargs):
         if not self.numero_reservation:
             # Génère un numéro de réservation unique basé sur l'ID du trajet et un UUID
-            self.numero_reservation = f"{self.trajet.id}-{uuid.uuid4().hex[:6].upper()}"
+            self.numero_reservation = f"{self.segmenthoraire_id.id}-{uuid.uuid4().hex[:6].upper()}"
         super().save(*args, **kwargs)
 
 

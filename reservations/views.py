@@ -74,7 +74,7 @@ def rechercher_trajet(request):
 
                                 segmentsegmenthoraire=segmentsegmenthorairess
                     
-                        segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
+                            segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
         
             print("Segments disponibles:", segments_disponibles)
             return render(request, 'reservations/TrajetsDisponible.html', {'segments_disponibles': segments_disponibles, 'form': form})
@@ -123,53 +123,76 @@ def details_trajet(request, id_trajet , id_segment , id_horaire):
         return JsonResponse({'error': 'Trajet non trouvé'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
         
-def Reservation_trajet(request , id_trajet , id_segment , id_horaire):
+def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthoraire):
+    if request.method == 'POST':
+                # Créer une instance de formulaire et la remplir avec les données de la requête
+                form = ClientForm(request.POST)
+                if form.is_valid():
+                # Enregistrer le client dans la base de données
+                    prenoms = form.cleaned_data['prenoms']
+                    email = form.cleaned_data['email']
+                    telephone = form.cleaned_data['telephone']
+                    nom = form.cleaned_data['nom']
+                    client = Client.objects.create(
+                        nom=nom,
+                        prenoms=prenoms,
+                        email=email,
+                        telephone=telephone,
+                    )
+                    client.save()
+                    segmentsegmenthoraire_instance = get_object_or_404(SegmentSegmentHoraire, id=id_segmentsegmenthoraire)
+                    client_instance = get_object_or_404(Client, id=client.id)
+
+
+
+                    reservation = Reservation.objects.create(
+                    segmenthoraire_id=segmentsegmenthoraire_instance,
+                    nombre_de_place=id_segment,
+                    client_id=client_instance,
+                    # Vous pouvez générer un numéro de réservation unique ici
+                    )
+                    reservation.save()
+                    print("reservationsuccees")
+                    return redirect('ticket', id_trajet=id_trajet, id_segment=id_segment, id_segmentsegmenthoraire=id_segmentsegmenthoraire)
+                else:
+                    form = ClientForm()
+    else:
         form = ClientForm()
-        
-        id_trajets=id_trajet
-        id_segments=id_segment
-        id_horaires=id_horaire
-        urlelement={
-            'form': form,
-            "id_trajets":id_trajets,
-            "id_segments":id_segments,
-            "id_horaires":id_horaires
-             
-        }
-        return render(request, 'reservations/ReservationTicket.html', {"urlelement":urlelement})
+    return render(request, 'reservations/ReservationTicket.html', {'form': form})
 
-def Travel_tiket(request , id_trajet , id_segment , id_horaire):
+# def Travel_tiket(request , id_trajet , id_segment , id_segmentsegmenthoraire):
         
-        if request.method == 'POST':
-        # Créer une instance de formulaire et la remplir avec les données de la requête
-            form = ClientForm(request.POST)
-            if form.is_valid():
-            # Enregistrer le client dans la base de données
-                prenoms = form.cleaned_data['prenoms']
-                email = form.cleaned_data['email']
-                telephone = form.cleaned_data['telephone']
-                nom = form.cleaned_data['nom']
-                client = Client.objects.create(
-                    nom=nom,
-                    prenoms=prenoms,
-                    email=email,
-                    telephone=telephone,
-                )
-                client.save()
+#         if request.method == 'POST':
+#         # Créer une instance de formulaire et la remplir avec les données de la requête
+#             form = ClientForm(request.POST)
+#             if form.is_valid():
+#             # Enregistrer le client dans la base de données
+#                 prenoms = form.cleaned_data['prenoms']
+#                 email = form.cleaned_data['email']
+#                 telephone = form.cleaned_data['telephone']
+#                 nom = form.cleaned_data['nom']
+#                 client = Client.objects.create(
+#                     nom=nom,
+#                     prenoms=prenoms,
+#                     email=email,
+#                     telephone=telephone,
+#                 )
+#                 client.save()
 
-                reservation = Reservation.objects.create(
-                trajet_id=id_trajet,
-                segment_id=id_segment,
-                client_id=client.id,
-                # Vous pouvez générer un numéro de réservation unique ici
-                )
-                reservation.save()
-            # Rediriger l'utilisateur vers une autre page après l'enregistrement
-                #return redirect('page_de_confirmation')
-        else:
-            # Si la requête est GET, afficher un formulaire vide
-            form = ClientForm()
+#                 reservation = Reservation.objects.create(
+#                 segmenthoraire_id=id_segmentsegmenthoraire,
+#                 nombre_de_place=id_segment,
+#                 client_id=client.id,
+#                 # Vous pouvez générer un numéro de réservation unique ici
+#                 )
+#                 reservation.save()
+#             # Rediriger l'utilisateur vers une autre page après l'enregistrement
+#                 #return redirect('page_de_confirmation')
+#         else:
+#             # Si la requête est GET, afficher un formulaire vide
+#             form = ClientForm()
 
 
 
@@ -227,4 +250,6 @@ def Travel_tiket(request , id_trajet , id_segment , id_horaire):
         # # except Exception as e:
         #     return JsonResponse({'error': str(e)}, status=500)
 
+def Ticket(request , id_trajet , id_segment , id_segmentsegmenthoraire ):  
+    return render(request, 'reservations/TravelTicket.html')
 

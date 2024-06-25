@@ -546,3 +546,18 @@ if date_depart==act_date:
 now = datetime.now()
             act_date = now.date()
             time_actuel_20 = now - timedelta(minutes=20)
+
+
+##Reservation ticket 
+<!-- <form id="myForm" method="post" class="mt-3" action="{% url 'travel_tiket' urlelement.id_trajets urlelement.id_segments urlelement.id_horaires %}" data-trajet-id="{{ urlelement.id_trajets }}" data-segment-id="{{ urlelement.id_segments }}" data-horaire-id="{{ urlelement.id_horaires }}">
+        
+
+        <meta name="csrf-token" content="{{ csrf_token }}"> -->
+
+        <!-- {{ urlelement.form.as_p }} -->
+        <!-- Champs cachés pour transmettre les IDs -->
+        <!-- <input type="hidden" name="id_trajet" value="{{ urlelement.id_trajets }}">
+        <input type="hidden" name="id_segment" value="{{ urlelement.id_segments }}">
+        <input type="hidden" name="id_horaire" value="{{ urlelement.id_horaires }}">
+        <button type="submit" class="btn btn-outline-warning">Valider</button>
+    </form> -->

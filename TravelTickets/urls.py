@@ -25,8 +25,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', views.rechercher_trajet , name='rechercher_trajet'),
     path('TravelTickets_Detail_trajet/<int:id_trajet>/<int:id_segment>/<int:id_horaire>/',views.details_trajet, name='detail_trajet'), 
-    path('TravelTickets_Reservation/<int:id_trajet>/<int:id_segment>/<int:id_horaire>/',views.Reservation_trajet, name='reservation_trajet'),
-    path('TravelTickets_Travel_tiket/<int:id_trajet>/<int:id_segment>/<int:id_horaire>/',views.Travel_tiket, name='travel_tiket'),
+    path('TravelTickets_Reservation/<int:id_trajet>/<int:id_segment>/<int:id_segmentsegmenthoraire>/',views.Reservation_trajet, name='reservation_trajet'),
+    # path('TravelTickets_Travel_tiket/<int:id_trajet>/<int:id_segment>/<int:id_horaire>/',views.Travel_tiket, name='travel_tiket'),
+    path('TravelTickets_Travel_tiket/<int:id_trajet>/<int:id_segment>/<int:id_segmentsegmenthoraire>/', views.Ticket, name='ticket'),
+
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
