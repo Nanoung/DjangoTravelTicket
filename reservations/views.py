@@ -239,16 +239,24 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
                                 segmenthoraires_list = list(segmenthoraires)
                                 print("Bien")
 
-                                segmenthoraire = segmenthoraires_list[position_selection]
-                                print("ordreSupp",segmenthoraire)
-                                segmenthoraire.place_disponible -= place_reserve
+                                segmenthoraires = segmenthoraires_list[position_selection]
+                                print("ordreSupp",segmenthoraires)
+                                print("segmentid_horaire:", segmenthoraires.segmenthoraire_id)
+                                segmenthoraire= SegmentSegmentHoraire.objects.filter(segment_id=segment_id ,  id= segmenthoraires.id).update(place_disponible =F('place_disponible') - place_reserve)
 
-                                try:
-                                    segmenthoraire.save(update_fields=['place_disponible'])
-                                    print("place_disponible après modification:", segmenthoraire.place_disponible)
-                                    print("DeuxiemeBien jouer")
-                                except Exception as e:
-                                    print("Erreur lors de la sauvegarde:", e)
+                                # # segmenthorainstance=SegmentHoraire.objects.get(id=segment_id )
+                                # print("place_disponible:", segmenthoraires.place_disponible)
+                                # print("segment_id:", segmenthoraires.segment_id)
+
+
+                                # segmenthoraires.place_disponible -= place_reserve
+
+                                # try:
+                                #     segmenthoraires.save(update_fields=['place_disponible'])
+                                #     print("place_disponible après modification:", segmenthoraires.place_disponible)
+                                #     print("DeuxiemeBien jouer")
+                                # except Exception as e:
+                                #     print("Erreur lors de la sauvegarde:", e)
                                 
                         else:
                             if ((ordredepart_seg < ordre_depart) and (ordredepart_seg > ordre_arrivee)):
@@ -259,16 +267,23 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
                                 segmenthoraires_list = list(segmenthoraires)
                                 print("Bien")
 
-                                segmenthoraire = segmenthoraires_list[position_selection]
-                                print("ordreinf",segmenthoraire)
-                                segmenthoraire.place_disponible -= place_reserve
-                                try:
-                                    segmenthoraire.save(update_fields=['place_disponible'])
-                                    print("place_disponible après modification:", segmenthoraire.place_disponible)
-                                    print("DeuxiemeBien jouer")
-                                except Exception as e:
-                                    print("Erreur lors de la sauvegarde:", e)
-                                print("TroixiemeBien jouer")
+                                segmenthoraires = segmenthoraires_list[position_selection]
+                                print("ordreinf",segmenthoraires)
+                                print("ordreInf",segmenthoraire)
+                                print("segmentid_horaire:", segmenthoraires.id)
+                                print("place_disponible:", segmenthoraires.place_disponible)
+                                print("segment_id:", segmenthoraires.segment_id)
+                                segmenthoraire= SegmentSegmentHoraire.objects.filter(segment_id=segment_id , id= segmenthoraires.id).update(place_disponible =F('place_disponible') - place_reserve)
+
+
+                                # segmenthoraires.place_disponible -= place_reserve
+                                # try:
+                                #     segmenthoraires.save(update_fields=['place_disponible'])
+                                #     print("place_disponible après modification:", segmenthoraires.place_disponible)
+                                #     print("DeuxiemeBien jouer")
+                                # except Exception as e:
+                                #     print("Erreur lors de la sauvegarde:", e)
+                                # print("TroixiemeBien jouer")
 
                     if informations:
                         print("reservationsuccees" ,informations)
