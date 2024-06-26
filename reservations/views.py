@@ -5,8 +5,10 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from reservations.models import Avantage, Client, Horaire, Reservation, Segment, SegmentHoraire, SegmentSegmentHoraire, Trajet, TrajetSegment
+from reservations.models import Avantage, Client, Horaire, Reservation, Segment, SegmentHoraire, SegmentSegmentHoraire, Trajet, TrajetSegment, Ville
 from .forms import ClientForm, TrajetHoraireForm
+from django.db.models import F
+
 
 
 # listings/views.py
@@ -161,10 +163,11 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
                     client_instance = get_object_or_404(Client, id=client.id)
 
 
+                    nombre_place = request.session.get('key_nombre_place')
 
                     reservation = Reservation.objects.create(
                     segmenthoraire_id=segmentsegmenthoraire_instance,
-                    nombre_de_place=id_segment,
+                    nombre_de_place=nombre_place,
                     client_id=client_instance,
                     # Vous pouvez générer un numéro de réservation unique ici
                     )
@@ -184,12 +187,76 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
                     type_car=trajet.car.type
                     place_reserve=reservation.nombre_de_place
 
-
-
-
-
-
                     informations.append((trajet ,segment, trajetsegments,  nombre_place, horaire,client_instance,immatriculation , type_car , depart , arrivee , reservation))
+
+
+                    #Modificationplace_disponible pour un depart d'un segment liee  a un trajet
+                    segsegmenthoraires = SegmentSegmentHoraire.objects.filter(segment_id=segment).order_by('id')
+                    segsegmenthoraires_list = list(segsegmenthoraires)
+                    segsegmenthoraire_instance = segsegmenthoraires.get(id=id_segmentsegmenthoraire)
+                    position_selection = segsegmenthoraires_list.index(segsegmenthoraire_instance)
+                    print("position_selection",position_selection)
+                    ville_depart= Ville.objects.get(nom=depart)
+                    ville_arrivee= Ville.objects.get(nom=arrivee)
+                    ordre_depart=ville_depart.ordre
+                    ordre_arrivee=ville_arrivee.ordre
+                    segmenttrajets=TrajetSegment.objects.filter(trajet_id = trajet)
+                    
+                    # segmenttrajets = trajet.segments.all()
+                    print("ordre_depart", ordre_depart)
+                    print("ordre_arrivee", ordre_arrivee)
+
+                    print("SEGMENTVERIFIER" , segmenttrajets)
+                    for segmenttrajet in segmenttrajets:
+                        depart=segmenttrajet.segment_id.depart
+                        segment_id=segmenttrajet.segment_id
+                        print("deopart" , depart)
+                        villedepart_seg= Ville.objects.get(nom=depart)
+                        ordredepart_seg = villedepart_seg.ordre
+                        print("ordredepart_seg" , ordredepart_seg)
+
+                        if  ordre_depart==ordredepart_seg:
+                            print("PremierBien jouer")
+
+                            # horaire_segment= SegmentHoraire.objects.get()
+                            segmenthoraire = SegmentSegmentHoraire.objects.filter(segment_id=segment_id , segmenthoraire_id= horaire.segmenthoraire_id).update(place_disponible =F('place_disponible') - place_reserve)
+                            print("Segmenthoraire" ,segmenthoraire)
+                            print("place_reserver",place_reserve )
+                            # print("Place_disponible trajet" ,segmenthoraire.place_disponible)
+                            # segmenthoraire.show = False
+                            # segmenthoraire.place_disponible -= place_reserve
+
+                            # segmenthoraire.place_disponible =35
+                            # segmenthoraire.save(update_fields=['place_disponible'])
+
+
+                            # segmenthoraire.place_disponible = segmenthoraire.place_disponible - place_reserve
+                            # segmenthoraire.save()
+                            # print("PremierBien OKO" ,segmenthoraire.place_disponible)
+
+
+                        elif (ordredepart_seg > ordre_depart) and (ordredepart_seg < ordre_arrivee) :
+                            print("COOL")
+
+                            segmenthorairs = SegmentSegmentHoraire.objects.filter(segment_id=segment_id)
+                            print("super")
+                            segmenthoraires_list = list(segmenthorairs)
+                            print("Bien")
+
+                            segmenthoraire = segmenthoraires_list[position_selection]
+                            print("Passe")
+
+                            # segmenthoraire = SegmentSegmentHoraire.objects.get(segment_id=segmenthoraire_instance)
+                            segmenthoraire.place_disponible -= place_reserve
+                            segmenthoraire.save()
+                            print("DeuxiemeBien jouer")
+
+
+                            
+
+
+
+
                     if informations:
                         print("reservationsuccees" ,informations)
 
