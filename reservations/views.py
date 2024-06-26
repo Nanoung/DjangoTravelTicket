@@ -70,14 +70,14 @@ def rechercher_trajet(request):
                             
                             segmentsegmenthoraires=SegmentSegmentHoraire.objects.filter(segment_id=segment , segmenthoraire_id = horairesegment , place_disponible__gte = nombre_place)
                            
-                            # print("HORAIRFINAL",segmentsegmenthoraires)
-
+                            print("HORAIRFINAL",segmentsegmenthoraires)
+                        
                             for  segmentsegmenthorairess in segmentsegmenthoraires:
                                 print("SECSECSESmnt", segmentsegmenthorairess.segmenthoraire_id)
 
-                                segmentsegmenthoraire=segmentsegmenthorairess
+                                segmentsegmenthoraire=segmentsegmenthorairess 
                     
-                        segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
+                            segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
                     if segments_disponibles :
                         request.session['key_nombre_place'] = nombre_place
                         nombre_plac = request.session.get('key_nombre_place')
@@ -217,45 +217,58 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
 
                         if  ordre_depart==ordredepart_seg:
                             print("PremierBien jouer")
+                            print("Premierhoraire.segmenthoraire_id" , horaire.segmenthoraire_id)
+                            # segmenthoraireH= SegmentSegmentHoraire.objects.filter(segment_id=segment_id)
+                            # depart_seghoraire= segmenthoraireH.segmenthoraire_id.heure_depart.all()
+                        
 
-                            # horaire_segment= SegmentHoraire.objects.get()
-                            segmenthoraire = SegmentSegmentHoraire.objects.filter(segment_id=segment_id , segmenthoraire_id= horaire.segmenthoraire_id).update(place_disponible =F('place_disponible') - place_reserve)
-                            print("Segmenthoraire" ,segmenthoraire)
-                            print("place_reserver",place_reserve )
-                            # print("Place_disponible trajet" ,segmenthoraire.place_disponible)
-                            # segmenthoraire.show = False
-                            # segmenthoraire.place_disponible -= place_reserve
-
-                            # segmenthoraire.place_disponible =35
-                            # segmenthoraire.save(update_fields=['place_disponible'])
+                            segmenthoraireH= SegmentSegmentHoraire.objects.filter(segment_id=segment_id , segmenthoraire_id__heure_depart= horaire.segmenthoraire_id.heure_depart)
 
 
-                            # segmenthoraire.place_disponible = segmenthoraire.place_disponible - place_reserve
-                            # segmenthoraire.save()
-                            # print("PremierBien OKO" ,segmenthoraire.place_disponible)
+                            segmenthoraire= SegmentSegmentHoraire.objects.filter(segment_id=segment_id , segmenthoraire_id__heure_depart= horaire.segmenthoraire_id.heure_depart).update(place_disponible =F('place_disponible') - place_reserve)
+                            print("Segmenthoraire :" , segmenthoraireH)
+                            print("Bien enregistrer")
+                            # print("Debut elif")
+                        if (ordre_arrivee - ordre_depart) > 0:
+                            if((ordredepart_seg > ordre_depart) and (ordredepart_seg < ordre_arrivee)):
 
+                                print("Ordre supperieur")
 
-                        elif (ordredepart_seg > ordre_depart) and (ordredepart_seg < ordre_arrivee) :
-                            print("COOL")
+                                segmenthoraires = SegmentSegmentHoraire.objects.filter(segment_id=segment_id)
+                                print("super")
+                                segmenthoraires_list = list(segmenthoraires)
+                                print("Bien")
 
-                            segmenthorairs = SegmentSegmentHoraire.objects.filter(segment_id=segment_id)
-                            print("super")
-                            segmenthoraires_list = list(segmenthorairs)
-                            print("Bien")
+                                segmenthoraire = segmenthoraires_list[position_selection]
+                                print("ordreSupp",segmenthoraire)
+                                segmenthoraire.place_disponible -= place_reserve
 
-                            segmenthoraire = segmenthoraires_list[position_selection]
-                            print("Passe")
+                                try:
+                                    segmenthoraire.save(update_fields=['place_disponible'])
+                                    print("place_disponible après modification:", segmenthoraire.place_disponible)
+                                    print("DeuxiemeBien jouer")
+                                except Exception as e:
+                                    print("Erreur lors de la sauvegarde:", e)
+                                
+                        else:
+                            if ((ordredepart_seg < ordre_depart) and (ordredepart_seg > ordre_arrivee)):
+                                print("Ordre Inferieur")
 
-                            # segmenthoraire = SegmentSegmentHoraire.objects.get(segment_id=segmenthoraire_instance)
-                            segmenthoraire.place_disponible -= place_reserve
-                            segmenthoraire.save()
-                            print("DeuxiemeBien jouer")
+                                segmenthoraires = SegmentSegmentHoraire.objects.filter(segment_id=segment_id)
+                                print("super")
+                                segmenthoraires_list = list(segmenthoraires)
+                                print("Bien")
 
-
-                            
-
-
-
+                                segmenthoraire = segmenthoraires_list[position_selection]
+                                print("ordreinf",segmenthoraire)
+                                segmenthoraire.place_disponible -= place_reserve
+                                try:
+                                    segmenthoraire.save(update_fields=['place_disponible'])
+                                    print("place_disponible après modification:", segmenthoraire.place_disponible)
+                                    print("DeuxiemeBien jouer")
+                                except Exception as e:
+                                    print("Erreur lors de la sauvegarde:", e)
+                                print("TroixiemeBien jouer")
 
                     if informations:
                         print("reservationsuccees" ,informations)

@@ -114,14 +114,16 @@
   
             {% for trajet, segment, horairesegments, trajetsegment , segmentsegmenthoraire ,segmentsegmenthoraires in segments_disponibles %}
 
-                {% for horaire in horairesegments %}
+                {% for horaire in segmentsegmenthoraires %}
+                
+                
 
                     <div class="card-body">
                         <ul class="list-group">
                     
                             
                             <a href="{% url 'detail_trajet' trajet.id segment.id horaire.id %}"  class="btn "  data-id="{{ trajet.id }}-{{ segment.id }}-{{ horaire.id }}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                <li class="list-group-item"> Depart de:{{ horaire.heure_depart|time:"H\hi" }} ---Trajet_id: {{ trajet.id }}  </li>
+                                <li class="list-group-item"> Depart de:{{ horaire.segmenthoraire_id.heure_depart|time:"H\hi" }} ---Trajet_id: {{ trajet.id }}  </li>
                                 <li class="list-group-item"> {{ segment.depart }} - {{ segment.arrivee }}    -- Prix: {{ trajetsegment.prix_segment }} FCFA   Offre:{{ trajet.car.type }}  --  {{ place_disponible.id }} -- Place_disponible :{{ segmentsegmenthoraire.place_disponible }}</li>
                             </a>
                             <a  href="{% url 'reservation_trajet' trajet.id segment.id segmentsegmenthoraire.id %}" class="btn btn-outline-warning">Continuer</a>
