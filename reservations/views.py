@@ -47,7 +47,7 @@ def rechercher_trajet(request):
                 trajetsegments = TrajetSegment.objects.filter(trajet_id=id_trajet)
                 for  trajetsegment in trajetsegments:
                     id_segment=trajetsegment.segment_id.id
-
+                   
                     print("segggg", trajet.segments.all())
                     segments_seg= Segment.objects.filter(id=id_segment)
                     print("segments_seg:", segments_seg)
@@ -75,11 +75,15 @@ def rechercher_trajet(request):
                             for  segmentsegmenthorairess in segmentsegmenthoraires:
                                 print("SECSECSESmnt", segmentsegmenthorairess.segmenthoraire_id)
 
-                                segmentsegmenthoraire=segmentsegmenthorairess 
-                    
+                            segmentsegmenthoraire=segmentsegmenthorairess 
+                            prix=trajetsegment.prix_segment
+                            montant_reservation=float(prix) * int(nombre_place)
+                            request.session['key_montant']=montant_reservation
+                            
                             segments_disponibles.append((trajet, segment, horairesegments,trajetsegment, segmentsegmenthoraire , segmentsegmenthoraires))
                     if segments_disponibles :
                         request.session['key_nombre_place'] = nombre_place
+                        
                         nombre_plac = request.session.get('key_nombre_place')
 
                         print(f"Nombre de places défini dans la session: {nombre_place}")
@@ -106,6 +110,8 @@ def details_trajet(request, id_trajet , id_segment , id_horaire):
         trajet_segments = TrajetSegment.objects.get(segment_id=id_segment , trajet_id = id_trajet)
         avantages = trajet.car.type.avantages
         horaire=SegmentHoraire.objects.get(id=id_horaire)
+        prix=trajet_segments.prix_segment
+
 
     
 
@@ -164,11 +170,14 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
 
 
                     nombre_place = request.session.get('key_nombre_place')
+                    montant_reservation=request.session.get('key_montant')
+
 
                     reservation = Reservation.objects.create(
                     segmenthoraire_id=segmentsegmenthoraire_instance,
                     nombre_de_place=nombre_place,
                     client_id=client_instance,
+                    montant_reservation=montant_reservation
                     # Vous pouvez générer un numéro de réservation unique ici
                     )
                     reservation.save()

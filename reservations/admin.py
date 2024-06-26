@@ -15,7 +15,7 @@ class ClientAdmin(admin.ModelAdmin):
 class AvantageAdmin(admin.ModelAdmin):
     list_display =('id','nom','description')
 class ReservationAdmin(admin.ModelAdmin):
-    list_display =('id','segmenthoraire_id', 'client_id','numero_reservation', 'date_reservation')
+    list_display =('id','segmenthoraire_id', 'client_id','numero_reservation', 'date_reservation','montant_reservation')
 class CarsAdmin(admin.ModelAdmin):
     list_display =('id','immatriculation','nombre_places','type')
 

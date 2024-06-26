@@ -404,6 +404,7 @@ class Reservation(models.Model):
     numero_reservation = models.CharField(max_length=100, editable=False, unique=True , null=True , blank=True)  # Numéro de réservation unique
     nombre_de_place = models.IntegerField(default=1)  # Nombre de places réservées
     date_reservation = models.DateTimeField(auto_now_add=True)  # Date de la réservation
+    montant_reservation=models.DecimalField(max_digits=10, decimal_places=2 , default=0)
 
     def save(self, *args, **kwargs):
         if not self.numero_reservation:
