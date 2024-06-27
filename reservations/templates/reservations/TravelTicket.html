@@ -13,15 +13,159 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
     
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <style>
+            body {
+                margin: 0;
+                font-family: Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+                font-size: .8125rem;
+                font-weight: 400;
+                line-height: 1.5385;
+                color: #333;
+                text-align: left;
+                background-color: #eee;
+            }
+
+            .mt-50{
+
+                margin-top: 50px;
+            }
+
+            .mb-50{
+
+                margin-bottom: 50px;
+            }
+
+
+
+            .card {
+                position: relative;
+                display: -ms-flexbox;
+                display: flex;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                min-width: 0;
+                word-wrap: break-word;
+                background-color: #fff;
+                background-clip: border-box;
+                border: 2px solid rgba(252, 149, 32, 0.125);
+                border-radius: .1875rem;
+            }
+
+            .card-img-actions {
+                position: relative;
+            }
+            .card-body {
+                -ms-flex: 1 1 auto;
+                flex: 1 1 auto;
+                padding: 1.25rem;
+                text-align: center;
+            }
+
+            .card-title {
+                margin-top: 10px;
+                font-size: 17px;
+            }
+
+
+            .invoice-color{
+                color: red !important;
+            }
+            .card-header {
+                padding: .9375rem 1.25rem;
+                margin-bottom: 0;
+                background-color: rgba(219, 114, 22, 0.02);
+                border-bottom: 1px solid rgba(220, 206, 187, 0.125);
+            }
+
+            a{
+
+                text-decoration: none !important;
+            }
+
+
+            .btn-light {
+                color: #333;
+                background-color: #fafafa;
+                border-color: #ddd;
+            }
+            .header-elements-inline {
+                display: -ms-flexbox;
+                display: flex;
+                -ms-flex-align: center;
+                align-items: center;
+                -ms-flex-pack: justify;
+                justify-content: space-between;
+                -ms-flex-wrap: nowrap;
+                flex-wrap: nowrap;
+            }
+
+            @media (min-width: 768px){
+            .wmin-md-400 {
+                min-width: 400px!important;
+            }}
+
+
+            .btn-primary {
+                color: #fff;
+                background-color: #2196f3;
+            }
+
+            .btn-labeled>b {
+                position: absolute;
+                top: -1px;
+                background-color: blue;
+                display: block;
+                line-height: 1;
+                padding: .62503rem;
+            }
+            .list-group-item {
+                text-align: justify;
+            }
+            .continuer{
+            position: relative;
+            left: 300px;
+        }
+        .detail{
+            position: relative;
+            left: 70px;
+        }
+            /* .conteneur{
+
+
+            } */
+
+    </style>
   
 
 
 </head>
 <body>
-    <h1>Reservation effectuer avec success</h1>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light ">
+        <a class="navbar-brand" href="#">Tickets</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'rechercher_trajet' %}">voyage <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="alert alert-success">Reservation effectuée avec success</div>
 
     {% for segment , trajet , trajetsegments , nombre_place , horaire , client_instance ,type_car ,immatriculation ,depart , arrivee , reservation  in  informations %}
-        <p> type voyage : {{ immatriculation }}</p> 
+        <!-- <p> type voyage : {{ immatriculation }}</p> 
         <p> Numero voyage : {{ trajet.id }}</p>
         <p> Numero voyage : {{ type_car }}</p>
 
@@ -40,11 +184,110 @@
 
 
         <p>Adress_arrivee :  {{ trajetsegments.prix_segment }} FCFA</p>
-        <p>somme a payer :  {{ reservation.montant_reservation }} FCFA</p>
+        <p>somme a payer :  {{ reservation.montant_reservation }} FCFA</p> -->
 
 
 
+        <div class="container d-flex justify-content-center mt-50 mb-50 conteneur">
+                
+            <div class="row">
+            
+                <div class="col-md-12">
+
+                    <div class="card">
+                        <div class="card-header bg-transparent header-elements-inline">
+                            <h6 class="card-title">Tichet voyage</h6>
+                            <div class="header-elements">
+                                <h6 class="invoice-color mb-2 mt-md-2">Reservation  {{ reservation.numero_reservation}}</h6>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class=" mb-4 pull-left">
+                                        <h6 class="invoice-color"> Information Client</h6>
+                                        <ul class="list list-unstyled mb-0 text-left">
+                                            <li>Nom  :{{ client_instance.nom}}</li>
+                                            <li>Prenoms : {{ client_instance.prenoms}}</li>
+                                            <li>Telephone :{{ client_instance.telephone}} </li>
+                                            <li>email :{{ client_instance.email}} </li>
+
+
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="mb-4 ">
+                                        <div class="text-sm-right">
+                                            <h6 class="invoice-color mb-2 mt-md-2">Information Voyage</h6>
+                                            <ul class="list list-unstyled mb-0">
+                                                <li>voyage: <span class="font-weight-semibold">{{ type_car }}</span></li>
+                                                <li>Date reservation: <span class="font-weight-semibold"> {{reservation.date_reservation|date:"j F Y, H:i" }} </span></li>
+                                                <li>Heure depart: <span class="font-weight-semibold">{{ horaire.segmenthoraire_id}}</span></li>   
+                                                <li>Adresse depart: <span class="font-weight-semibold">{{ depart }}</span></li>
+                                                <li>Adresse Arrivee: <span class="font-weight-semibold">{{ arrivee }}</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-md-flex flex-md-wrap">
+                                <div class="mb-4 mb-md-2 text-left">
+                                    <span class="text-muted"></span>
+                                    <ul class="list list-unstyled mb-0">
+                                        <li></li>
+                                        <li></li>
+                                        <li></li>
+                                        
+                                    </ul>
+                                </div>
+
+                                <div class="mb-2 ml-auto">
+                                    <span class="text-muted">Details:</span>
+                                    <div class="d-flex flex-wrap wmin-md-400 detail">
+                                        <ul class="list list-unstyled mb-0 text-left list-group">
+                                            <li class="list-group-item">Prix unitaire voyage : {{ trajetsegments.prix_segment }} FCFA</li>
+                                            <li class="list-group-item">Nombre place :{{ nombre_place }}</li>                               
+                                            <li class="list-group-item"><h3 class="my-2">Total a  paye: {{ reservation.montant_reservation }}FCFA </h3></li>
+
+                                        </ul>
+
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <button type="button"  id="downloadButton" class="btn btn-outline-warning continuer">Telecharger</button>
+
+                        </div>
+                </div>
+
+
+            </div>
+        </div>
     {% endfor %}
+    
+    <script>
+        function downloadFile(data, filename = 'ticket.txt', type = 'text/plain') {
+            const blob = new Blob([data], { type });
+            const url = window.URL.createObjectURL(blob);
+
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = filename;
+            document.body.appendChild(anchor); // Append to the DOM to trigger the download
+            anchor.click();
+            document.body.removeChild(anchor); // Remove from the DOM after the download
+
+            window.URL.revokeObjectURL(url);
+        }
+
+        
+    </script>
      
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 

@@ -34,18 +34,24 @@ def get_default_ville():
 class TrajetHoraireForm(forms.Form):
 
 
-    adress_depart = forms.ChoiceField(choices=get_ville_choices)
-    adress_arrivee = forms.ChoiceField(choices=get_ville_choices, initial=get_default_ville )
+    adress_depart = forms.ChoiceField(choices=get_ville_choices , widget=forms.Select(attrs={'class': 'form-select'}))
+    adress_arrivee = forms.ChoiceField(choices=get_ville_choices, initial=get_default_ville  , widget=forms.Select(attrs={'class': 'form-select'}))
     date_depart = forms.DateField(widget=forms.DateInput(attrs={
         'type': 'date',
         'min': date.today().isoformat(),
         'value': date.today().isoformat()
     }))
-    Nombre_place=forms.IntegerField(initial=1, min_value=1)
+    Nombre_place=forms.IntegerField(initial=1, min_value=1 , widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ['nom', 'prenoms', 'email', 'telephone']
+        widgets = {
+            'nom': forms.TextInput(attrs={'class': 'form-control'}),
+            'prenoms': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'telephone': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
     

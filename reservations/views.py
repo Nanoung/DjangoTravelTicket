@@ -2,12 +2,14 @@ from datetime import date, datetime, timedelta
 import json
 from django.core import serializers
 
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from reservations.models import Avantage, Client, Horaire, Reservation, Segment, SegmentHoraire, SegmentSegmentHoraire, Trajet, TrajetSegment, Ville
 from .forms import ClientForm, TrajetHoraireForm
 from django.db.models import F
+from django.template.loader import render_to_string
+# from weasyprint import HTML
 
 
 
@@ -240,18 +242,20 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
                             # print("Debut elif")
                         if (ordre_arrivee - ordre_depart) > 0:
                             if((ordredepart_seg > ordre_depart) and (ordredepart_seg < ordre_arrivee)):
+                                # if position_selection < len(segmenthoraires_list):
 
-                                print("Ordre supperieur")
+                                    print("Ordre supperieur")
 
-                                segmenthoraires = SegmentSegmentHoraire.objects.filter(segment_id=segment_id)
-                                print("super")
-                                segmenthoraires_list = list(segmenthoraires)
-                                print("Bien")
+                                    segmenthoraires = SegmentSegmentHoraire.objects.filter(segment_id=segment_id)
+                                    print("super")
+                                    segmenthoraires_list = list(segmenthoraires)
+                                    print("BienLenglist", len(segmenthoraires_list))
+                                    print("position_selection" , position_selection)
 
-                                segmenthoraires = segmenthoraires_list[position_selection]
-                                print("ordreSupp",segmenthoraires)
-                                print("segmentid_horaire:", segmenthoraires.segmenthoraire_id)
-                                segmenthoraire= SegmentSegmentHoraire.objects.filter(segment_id=segment_id ,  id= segmenthoraires.id).update(place_disponible =F('place_disponible') - place_reserve)
+                                    segmenthoraires = segmenthoraires_list[position_selection]
+                                    print("ordreSupp",segmenthoraires)
+                                    print("segmentid_horaire:", segmenthoraires.segmenthoraire_id)
+                                    segmenthoraire= SegmentSegmentHoraire.objects.filter(segment_id=segment_id ,  id= segmenthoraires.id).update(place_disponible =F('place_disponible') - place_reserve)
 
                                 # # segmenthorainstance=SegmentHoraire.objects.get(id=segment_id )
                                 # print("place_disponible:", segmenthoraires.place_disponible)
@@ -402,3 +406,48 @@ def Reservation_trajet(request , id_trajet , id_segment , id_segmentsegmenthorai
 def Ticket(request , id_trajet , id_segment , id_segmentsegmenthoraire ):  
     return render(request, 'reservations/TravelTicket.html')
 
+# def Telechargement(request, reservation_id):
+#     # Récupérer la réservation à partir de la base de données
+#     reservation = get_object_or_404(Reservation, id=reservation_id)
+
+#     # Données à passer au template
+#     context = {
+#         'nom': reservation.client_id.nom,
+#         'trajet': f"{reservation.adress_depart} - {reservation.adress_arrivee}",
+#         'date': reservation.segmenthoraire_id.heure_depart.strftime('%d/%m/%Y'),
+#         'nombre_places': reservation.nombre_de_place,
+#         'prix_total': f"{reservation.montant_reservation} FCFA"
+#     }
+
+#     # Rendre le template HTML avec les données
+#     html_string = render_to_string('TravelTicket.html', context)
+
+#     # Générer le PDF
+#     html = HTML(string=html_string, base_url=request.build_absolute_uri())
+#     pdf = html.write_pdf()
+
+#     # Créer la réponse HTTP avec le PDF
+#     response = HttpResponse(pdf, content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="ticket_reservation_{reservation_id}.pdf"'
+#     return response
+
+def Reservation_Effectuee(request ):
+    informations=[]
+    reservations= Reservation.objects.all().order_by('-id')
+    for reservation in reservations:
+        client=Client.objects.get(id=reservation.client_id.id)
+        segmenthoraire=SegmentSegmentHoraire.objects.get(id=reservation.segmenthoraire_id.id)
+        id_segment=segmenthoraire.segment_id.id
+        print("HeursDEPART",segmenthoraire.segmenthoraire_id)
+        segment_adress=Segment.objects.get(id =id_segment)
+        segheur_depart=segmenthoraire.segmenthoraire_id
+
+
+        informations.append((reservations ,client, segmenthoraire ,segheur_depart))
+
+
+
+
+
+
+    return render(request, 'reservations/reservation.html' , {'informations' : informations })
